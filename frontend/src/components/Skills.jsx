@@ -308,46 +308,18 @@ const Skills = () => {
             ))}
           </motion.div>
 
-          {/* Skills Hexagon Grid - Honeycomb Pattern */}
-          <div className="honeycomb-grid">
-            {Array.from({ length: Math.ceil(filteredSkills.length / 15) }).map((_, rowPairIndex) => {
-              const startIndex = rowPairIndex * 15
-              const row1Skills = filteredSkills.slice(startIndex, startIndex + 8)
-              const row2Skills = filteredSkills.slice(startIndex + 8, startIndex + 15)
-
-              return (
-                <div key={rowPairIndex}>
-                  {row1Skills.length > 0 && (
-                    <div className="honeycomb-row">
-                      {row1Skills.map((skill, index) => (
-                        <HexagonSkill
-                          key={skill.id}
-                          skill={skill}
-                          index={startIndex + index}
-                          isFlipped={isFlipped}
-                          onMouseEnter={() => setIsPaused(true)}
-                          onMouseLeave={() => setIsPaused(false)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                  {row2Skills.length > 0 && (
-                    <div className="honeycomb-row offset">
-                      {row2Skills.map((skill, index) => (
-                        <HexagonSkill
-                          key={skill.id}
-                          skill={skill}
-                          index={startIndex + 6 + index}
-                          isFlipped={isFlipped}
-                          onMouseEnter={() => setIsPaused(true)}
-                          onMouseLeave={() => setIsPaused(false)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+          {/* Skills Hexagon Grid - Responsive Grid */}
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 max-w-5xl mx-auto">
+            {filteredSkills.map((skill, index) => (
+              <HexagonSkill
+                key={skill.id}
+                skill={skill}
+                index={index}
+                isFlipped={isFlipped}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+              />
+            ))}
           </div>
         </motion.div>
       </div>
