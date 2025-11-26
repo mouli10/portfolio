@@ -106,8 +106,8 @@ const Skills = () => {
       {/* Hexagon Styles */}
       <style>{`
         .hexagon-container {
-          width: 100px;
-          height: 115px;
+          width: 80px;
+          height: 92px;
           margin: 0;
         }
 
@@ -146,7 +146,7 @@ const Skills = () => {
           height: 100%;
           display: flex;
           align-items: center;
-          justify-center;
+          justify-content: center;
           overflow: hidden;
         }
 
@@ -168,42 +168,101 @@ const Skills = () => {
           display: flex;
           align-items: center;
           justify-content: center;
+          padding: 8px;
         }
 
         .hexagon-text h3 {
           text-align: center;
           width: 100%;
+          font-size: 0.65rem;
+          line-height: 1.1;
         }
 
         .honeycomb-grid {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: -24px;
+          gap: -18px;
         }
 
         .honeycomb-row {
           display: flex;
-          gap: 8px;
-          margin-bottom: -24px;
+          gap: 4px;
+          margin-bottom: -18px;
         }
 
         .honeycomb-row.offset {
-          margin-left: 52px;
+          margin-left: 40px;
         }
 
+        /* Tablet */
+        @media (min-width: 640px) {
+          .hexagon-container {
+            width: 95px;
+            height: 109px;
+          }
+
+          .hexagon-text h3 {
+            font-size: 0.75rem;
+          }
+
+          .honeycomb-grid {
+            gap: -22px;
+          }
+
+          .honeycomb-row {
+            gap: 6px;
+            margin-bottom: -22px;
+          }
+
+          .honeycomb-row.offset {
+            margin-left: 48px;
+          }
+        }
+
+        /* Desktop */
         @media (min-width: 768px) {
           .hexagon-container {
             width: 110px;
             height: 127px;
           }
 
+          .hexagon-text h3 {
+            font-size: 0.875rem;
+          }
+
           .honeycomb-row {
+            gap: 8px;
             margin-bottom: -27px;
           }
 
           .honeycomb-row.offset {
             margin-left: 57px;
+          }
+        }
+
+        /* Large Desktop */
+        @media (min-width: 1024px) {
+          .hexagon-container {
+            width: 120px;
+            height: 138px;
+          }
+
+          .hexagon-text h3 {
+            font-size: 0.9rem;
+          }
+
+          .honeycomb-grid {
+            gap: -28px;
+          }
+
+          .honeycomb-row {
+            gap: 10px;
+            margin-bottom: -28px;
+          }
+
+          .honeycomb-row.offset {
+            margin-left: 62px;
           }
         }
       `}</style>
