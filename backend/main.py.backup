@@ -1,0 +1,322 @@
+from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, EmailStr
+from typing import List, Optional
+from datetime import datetime
+import uvicorn
+
+app = FastAPI(title="Portfolio API", version="1.0.0")
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Simple admin authentication (in production, use proper JWT tokens and hashed passwords)
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123"  # Change this!
+ADMIN_TOKEN = "portfolio_admin_token_2024"  # Change this!
+
+def verify_admin_token(authorization: Optional[str] = Header(None)):
+    """Verify admin authentication token"""
+    if not authorization or authorization != f"Bearer {ADMIN_TOKEN}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return True
+
+# Models
+class Project(BaseModel):
+    id: int
+    title: str
+    description: str
+    technologies: List[str]
+    github_url: Optional[str] = None
+    live_url: Optional[str] = None
+    image_url: Optional[str] = None
+    featured: bool = False
+
+class ProjectCreate(BaseModel):
+    title: str
+    description: str
+    technologies: List[str]
+    github_url: Optional[str] = None
+    live_url: Optional[str] = None
+    image_url: Optional[str] = None
+    featured: bool = False
+
+class Skill(BaseModel):
+    id: int
+    name: str
+    category: str
+    level: int  # 1-100
+    icon: Optional[str] = None
+
+class SkillCreate(BaseModel):
+    name: str
+    category: str
+    level: int
+    icon: Optional[str] = None
+
+class ContactMessage(BaseModel):
+    name: str
+    email: EmailStr
+    subject: str
+    message: str
+
+class ContactMessageStored(ContactMessage):
+    id: int
+    timestamp: str
+    read: bool = False
+
+class AdminLogin(BaseModel):
+    username: str
+    password: str
+
+# Sample Data
+projects_db = [
+    {
+        "id": 1,
+        "title": "E-Commerce Platform",
+        "description": "A full-stack e-commerce platform with payment integration, real-time inventory management, and admin dashboard.",
+        "technologies": ["React", "Node.js", "MongoDB", "Stripe", "Redux"],
+        "github_url": "https://github.com/yourusername/ecommerce",
+        "live_url": "https://demo-ecommerce.com",
+        "image_url": "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop",
+        "featured": True
+    },
+    {
+        "id": 2,
+        "title": "AI-Powered Chat Application",
+        "description": "Real-time chat app with AI-powered message suggestions and sentiment analysis using GPT-4.",
+        "technologies": ["Python", "FastAPI", "WebSocket", "OpenAI", "PostgreSQL"],
+        "github_url": "https://github.com/yourusername/ai-chat",
+        "live_url": "https://ai-chat-demo.com",
+        "image_url": "https://images.unsplash.com/photo-1587560699334-cc4ff634909a?w=800&h=600&fit=crop",
+        "featured": True
+    },
+    {
+        "id": 3,
+        "title": "Task Management System",
+        "description": "Collaborative task management with drag-and-drop interface, team collaboration, and analytics.",
+        "technologies": ["Vue.js", "Express", "MySQL", "Socket.io", "Docker"],
+        "github_url": "https://github.com/yourusername/task-manager",
+        "live_url": "https://task-manager-demo.com",
+        "image_url": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop",
+        "featured": False
+    },
+    {
+        "id": 4,
+        "title": "Weather Analytics Dashboard",
+        "description": "Interactive weather dashboard with historical data visualization and predictive analytics.",
+        "technologies": ["React", "D3.js", "Python", "Flask", "TensorFlow"],
+        "github_url": "https://github.com/yourusername/weather-dashboard",
+        "image_url": "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800&h=600&fit=crop",
+        "featured": False
+    }
+]
+
+skills_db = [
+    {"id": 1, "name": "Python", "category": "Backend", "level": 90, "icon": "🐍"},
+    {"id": 2, "name": "JavaScript", "category": "Frontend", "level": 95, "icon": "⚡"},
+    {"id": 3, "name": "React", "category": "Frontend", "level": 92, "icon": "⚛️"},
+    {"id": 4, "name": "Node.js", "category": "Backend", "level": 88, "icon": "🟢"},
+    {"id": 5, "name": "FastAPI", "category": "Backend", "level": 85, "icon": "🚀"},
+    {"id": 6, "name": "PostgreSQL", "category": "Database", "level": 82, "icon": "🐘"},
+    {"id": 7, "name": "MongoDB", "category": "Database", "level": 80, "icon": "🍃"},
+    {"id": 8, "name": "Docker", "category": "DevOps", "level": 78, "icon": "🐳"},
+    {"id": 9, "name": "AWS", "category": "DevOps", "level": 75, "icon": "☁️"},
+    {"id": 10, "name": "TypeScript", "category": "Frontend", "level": 88, "icon": "📘"},
+    {"id": 11, "name": "Git", "category": "Tools", "level": 90, "icon": "🔧"},
+    {"id": 12, "name": "TailwindCSS", "category": "Frontend", "level": 92, "icon": "🎨"}
+]
+
+# Contact messages storage
+contact_messages_db = []
+message_id_counter = 1
+
+# Routes
+@app.get("/")
+async def root():
+    return {
+        "message": "Portfolio API",
+        "version": "1.0.0",
+        "endpoints": {
+            "projects": "/api/projects",
+            "skills": "/api/skills",
+            "contact": "/api/contact"
+        }
+    }
+
+@app.get("/api/projects", response_model=List[Project])
+async def get_projects(featured: Optional[bool] = None):
+    """Get all projects or filter by featured status"""
+    if featured is not None:
+        return [p for p in projects_db if p["featured"] == featured]
+    return projects_db
+
+@app.get("/api/projects/{project_id}", response_model=Project)
+async def get_project(project_id: int):
+    """Get a specific project by ID"""
+    project = next((p for p in projects_db if p["id"] == project_id), None)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
+
+@app.get("/api/skills", response_model=List[Skill])
+async def get_skills(category: Optional[str] = None):
+    """Get all skills or filter by category"""
+    if category:
+        return [s for s in skills_db if s["category"].lower() == category.lower()]
+    return skills_db
+
+@app.get("/api/skills/categories")
+async def get_skill_categories():
+    """Get all unique skill categories"""
+    categories = list(set(s["category"] for s in skills_db))
+    return {"categories": categories}
+
+@app.post("/api/contact")
+async def submit_contact(message: ContactMessage):
+    """Handle contact form submission"""
+    global message_id_counter
+    
+    # Store the message
+    stored_message = {
+        "id": message_id_counter,
+        "name": message.name,
+        "email": message.email,
+        "subject": message.subject,
+        "message": message.message,
+        "timestamp": datetime.now().isoformat(),
+        "read": False
+    }
+    contact_messages_db.append(stored_message)
+    message_id_counter += 1
+    
+    print(f"New contact message from {message.name} ({message.email})")
+    print(f"Subject: {message.subject}")
+    print(f"Message: {message.message}")
+    
+    return {
+        "success": True,
+        "message": "Thank you for your message! I'll get back to you soon.",
+        "timestamp": stored_message["timestamp"]
+    }
+
+# ============= ADMIN ENDPOINTS =============
+
+@app.post("/api/admin/login")
+async def admin_login(credentials: AdminLogin):
+    """Admin login endpoint"""
+    if credentials.username == ADMIN_USERNAME and credentials.password == ADMIN_PASSWORD:
+        return {
+            "success": True,
+            "token": ADMIN_TOKEN,
+            "message": "Login successful"
+        }
+    raise HTTPException(status_code=401, detail="Invalid credentials")
+
+# Contact Messages Admin Endpoints
+@app.get("/api/admin/messages", dependencies=[Depends(verify_admin_token)])
+async def get_all_messages():
+    """Get all contact messages (admin only)"""
+    return sorted(contact_messages_db, key=lambda x: x["timestamp"], reverse=True)
+
+@app.patch("/api/admin/messages/{message_id}/read", dependencies=[Depends(verify_admin_token)])
+async def mark_message_read(message_id: int):
+    """Mark a message as read"""
+    message = next((m for m in contact_messages_db if m["id"] == message_id), None)
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+    message["read"] = True
+    return {"success": True}
+
+@app.delete("/api/admin/messages/{message_id}", dependencies=[Depends(verify_admin_token)])
+async def delete_message(message_id: int):
+    """Delete a contact message"""
+    global contact_messages_db
+    message = next((m for m in contact_messages_db if m["id"] == message_id), None)
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+    contact_messages_db = [m for m in contact_messages_db if m["id"] != message_id]
+    return {"success": True}
+
+# Projects Admin Endpoints
+@app.post("/api/admin/projects", dependencies=[Depends(verify_admin_token)])
+async def create_project(project: ProjectCreate):
+    """Create a new project"""
+    new_id = max([p["id"] for p in projects_db], default=0) + 1
+    new_project = {"id": new_id, **project.dict()}
+    projects_db.append(new_project)
+    return new_project
+
+@app.put("/api/admin/projects/{project_id}", dependencies=[Depends(verify_admin_token)])
+async def update_project(project_id: int, project: ProjectCreate):
+    """Update an existing project"""
+    existing = next((p for p in projects_db if p["id"] == project_id), None)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    updated_project = {"id": project_id, **project.dict()}
+    index = projects_db.index(existing)
+    projects_db[index] = updated_project
+    return updated_project
+
+@app.delete("/api/admin/projects/{project_id}", dependencies=[Depends(verify_admin_token)])
+async def delete_project(project_id: int):
+    """Delete a project"""
+    global projects_db
+    project = next((p for p in projects_db if p["id"] == project_id), None)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    projects_db = [p for p in projects_db if p["id"] != project_id]
+    return {"success": True}
+
+# Skills Admin Endpoints
+@app.post("/api/admin/skills", dependencies=[Depends(verify_admin_token)])
+async def create_skill(skill: SkillCreate):
+    """Create a new skill"""
+    new_id = max([s["id"] for s in skills_db], default=0) + 1
+    new_skill = {"id": new_id, **skill.dict()}
+    skills_db.append(new_skill)
+    return new_skill
+
+@app.put("/api/admin/skills/{skill_id}", dependencies=[Depends(verify_admin_token)])
+async def update_skill(skill_id: int, skill: SkillCreate):
+    """Update an existing skill"""
+    existing = next((s for s in skills_db if s["id"] == skill_id), None)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    
+    updated_skill = {"id": skill_id, **skill.dict()}
+    index = skills_db.index(existing)
+    skills_db[index] = updated_skill
+    return updated_skill
+
+@app.delete("/api/admin/skills/{skill_id}", dependencies=[Depends(verify_admin_token)])
+async def delete_skill(skill_id: int):
+    """Delete a skill"""
+    global skills_db
+    skill = next((s for s in skills_db if s["id"] == skill_id), None)
+    if not skill:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    skills_db = [s for s in skills_db if s["id"] != skill_id]
+    return {"success": True}
+
+@app.get("/api/admin/stats", dependencies=[Depends(verify_admin_token)])
+async def get_admin_stats():
+    """Get statistics for admin dashboard"""
+    return {
+        "total_projects": len(projects_db),
+        "featured_projects": len([p for p in projects_db if p["featured"]]),
+        "total_skills": len(skills_db),
+        "total_messages": len(contact_messages_db),
+        "unread_messages": len([m for m in contact_messages_db if not m["read"]])
+    }
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+

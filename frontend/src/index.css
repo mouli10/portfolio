@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black text-gray-100;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-purple-500;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-gray-800 to-gray-900;
+  }
+}
+
+/* Light mode overrides */
+.light {
+  background-color: white;
+  color: #1f2937;
+}
+
+.light body {
+  background-color: white;
+  color: #1f2937;
+}
+
+.light h1,
+.light h2,
+.light h3,
+.light h4,
+.light h5,
+.light h6 {
+  color: #111827;
+}
+
+.light p {
+  color: #374151;
+}
+
+.light .text-white {
+  color: #111827 !important;
+}
+
+.light .text-gray-100 {
+  color: #111827 !important;
+}
+
+.light .text-gray-200 {
+  color: #1f2937 !important;
+}
+
+.light .text-gray-300 {
+  color: #374151 !important;
+}
+
+.light .text-gray-400 {
+  color: #4b5563 !important;
+}
+
+.light .bg-gray-800 {
+  background-color: #f3f4f6 !important;
+}
+
+.light .bg-gray-900 {
+  background-color: white !important;
+  border-color: #e5e7eb !important;
+}
+
+.light .border-gray-700 {
+  border-color: #d1d5db !important;
+}
+
+.light .bg-black {
+  background-color: white !important;
+}
+
+.light .card-gradient {
+  background-image: linear-gradient(to bottom right, #f9fafb, #f3f4f6) !important;
+}
+
+/* Custom scrollbar - Dark mode */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a202c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+/* Custom scrollbar - Light mode */
+.light ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}

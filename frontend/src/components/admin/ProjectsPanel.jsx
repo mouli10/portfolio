@@ -1,0 +1,281 @@
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa'
+import axios from 'axios'
+
+const ProjectsPanel = ({ onStatsUpdate }) => {
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [editingProject, setEditingProject] = useState(null)
+  const [isCreating, setIsCreating] = useState(false)
+
+  const emptyProject = {
+    title: '',
+    description: '',
+    technologies: [],
+    github_url: '',
+    live_url: '',
+    image_url: '',
+    featured: false
+  }
+
+  useEffect(() => {
+    fetchProjects()
+  }, [])
+
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.get('/api/projects')
+      setProjects(response.data)
+      setLoading(false)
+      if (onStatsUpdate) onStatsUpdate()
+    } catch (error) {
+      console.error('Error fetching projects:', error)
+      setLoading(false)
+    }
+  }
+
+  const saveProject = async () => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      const config = { headers: { Authorization: `Bearer ${token}` } }
+
+      if (editingProject.id) {
+        // Update existing
+        await axios.put(`/api/admin/projects/${editingProject.id}`, editingProject, config)
+      } else {
+        // Create new
+        await axios.post('/api/admin/projects', editingProject, config)
+      }
+
+      setEditingProject(null)
+      setIsCreating(false)
+      fetchProjects()
+    } catch (error) {
+      console.error('Error saving project:', error)
+      alert('Failed to save project')
+    }
+  }
+
+  const deleteProject = async (projectId) => {
+    if (!window.confirm('Are you sure you want to delete this project?')) return
+
+    try {
+      const token = localStorage.getItem('adminToken')
+      await axios.delete(`/api/admin/projects/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      fetchProjects()
+    } catch (error) {
+      console.error('Error deleting project:', error)
+      alert('Failed to delete project')
+    }
+  }
+
+  const handleTechChange = (value) => {
+    const techs = value.split(',').map(t => t.trim()).filter(t => t)
+    setEditingProject({ ...editingProject, technologies: techs })
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+        <p className="text-gray-400 mt-4">Loading projects...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl font-bold text-white">Manage Projects</h2>
+        <button
+          onClick={() => {
+            setEditingProject(emptyProject)
+            setIsCreating(true)
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all"
+        >
+          <FaPlus /> Add New Project
+        </button>
+      </div>
+
+      {/* Edit/Create Form */}
+      {(editingProject || isCreating) && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gray-800 rounded-lg p-6 mb-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-white">
+              {editingProject.id ? 'Edit Project' : 'Create New Project'}
+            </h3>
+            <button
+              onClick={() => {
+                setEditingProject(null)
+                setIsCreating(false)
+              }}
+              className="text-gray-400 hover:text-white"
+            >
+              <FaTimes />
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Title *</label>
+              <input
+                type="text"
+                value={editingProject.title}
+                onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Technologies (comma-separated) *</label>
+              <input
+                type="text"
+                value={editingProject.technologies.join(', ')}
+                onChange={(e) => handleTechChange(e.target.value)}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                placeholder="React, Node.js, MongoDB"
+                required
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm text-gray-400 mb-2">Description *</label>
+              <textarea
+                value={editingProject.description}
+                onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                rows="3"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">GitHub URL</label>
+              <input
+                type="url"
+                value={editingProject.github_url}
+                onChange={(e) => setEditingProject({ ...editingProject, github_url: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Live URL</label>
+              <input
+                type="url"
+                value={editingProject.live_url}
+                onChange={(e) => setEditingProject({ ...editingProject, live_url: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Image URL</label>
+              <input
+                type="url"
+                value={editingProject.image_url}
+                onChange={(e) => setEditingProject({ ...editingProject, image_url: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+              />
+            </div>
+
+            <div className="flex items-center">
+              <label className="flex items-center gap-2 text-white cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={editingProject.featured}
+                  onChange={(e) => setEditingProject({ ...editingProject, featured: e.target.checked })}
+                  className="w-5 h-5"
+                />
+                Featured Project
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-6">
+            <button
+              onClick={saveProject}
+              className="flex items-center gap-2 px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-all"
+            >
+              <FaSave /> Save Project
+            </button>
+            <button
+              onClick={() => {
+                setEditingProject(null)
+                setIsCreating(false)
+              }}
+              className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Projects Grid */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {projects.map((project) => (
+          <motion.div
+            key={project.id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gray-800 rounded-lg overflow-hidden"
+          >
+            {project.image_url && (
+              <img
+                src={project.image_url}
+                alt={project.title}
+                className="w-full h-48 object-cover"
+              />
+            )}
+            <div className="p-4">
+              <div className="flex items-start justify-between mb-2">
+                <h3 className="text-xl font-bold text-white">{project.title}</h3>
+                {project.featured && (
+                  <span className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full text-xs">
+                    Featured
+                  </span>
+                )}
+              </div>
+              <p className="text-gray-400 text-sm mb-3 line-clamp-2">{project.description}</p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {project.technologies.map((tech) => (
+                  <span key={tech} className="px-2 py-1 bg-gray-700 text-primary-400 rounded text-xs">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setEditingProject(project)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
+                >
+                  <FaEdit /> Edit
+                </button>
+                <button
+                  onClick={() => deleteProject(project.id)}
+                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default ProjectsPanel
+
