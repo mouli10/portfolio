@@ -27,7 +27,7 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
     const fetchCertificates = async () => {
         try {
             const response = await axios.get('/api/certificates')
-            setCertificates(response.data)
+            setCertificates(Array.isArray(response.data) ? response.data : [])
             setLoading(false)
             if (onStatsUpdate) onStatsUpdate()
         } catch (error) {

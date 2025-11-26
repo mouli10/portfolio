@@ -27,7 +27,7 @@ const EducationPanel = ({ onStatsUpdate }) => {
     const fetchEducation = async () => {
         try {
             const response = await axios.get('/api/education')
-            setEducationList(response.data)
+            setEducationList(Array.isArray(response.data) ? response.data : [])
             setLoading(false)
             if (onStatsUpdate) onStatsUpdate()
         } catch (error) {

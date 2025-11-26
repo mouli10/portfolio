@@ -24,7 +24,7 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
                 axios.get('/api/skill-categories'),
                 axios.get('/api/skills')
             ])
-            setCategories(categoriesRes.data)
+            setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : [])
             setSkills(skillsRes.data)
             setLoading(false)
             if (onStatsUpdate) onStatsUpdate()

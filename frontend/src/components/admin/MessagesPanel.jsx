@@ -19,11 +19,13 @@ const MessagesPanel = ({ onStatsUpdate }) => {
       const response = await axios.get('/api/admin/messages', {
         headers: { Authorization: `Bearer ${token}` }
       })
-      setMessages(response.data)
+      // Ensure we always have an array
+      setMessages(Array.isArray(response.data) ? response.data : [])
       setLoading(false)
       if (onStatsUpdate) onStatsUpdate()
     } catch (error) {
       console.error('Error fetching messages:', error)
+      setMessages([]) // Set empty array on error
       setLoading(false)
     }
   }

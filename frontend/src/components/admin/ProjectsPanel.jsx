@@ -26,7 +26,7 @@ const ProjectsPanel = ({ onStatsUpdate }) => {
   const fetchProjects = async () => {
     try {
       const response = await axios.get('/api/projects')
-      setProjects(response.data)
+      setProjects(Array.isArray(response.data) ? response.data : [])
       setLoading(false)
       if (onStatsUpdate) onStatsUpdate()
     } catch (error) {

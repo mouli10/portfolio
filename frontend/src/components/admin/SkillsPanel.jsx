@@ -28,7 +28,7 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
   const fetchSkills = async () => {
     try {
       const response = await axios.get('/api/skills')
-      setSkills(response.data)
+      setSkills(Array.isArray(response.data) ? response.data : [])
       setLoading(false)
       if (onStatsUpdate) onStatsUpdate()
     } catch (error) {
