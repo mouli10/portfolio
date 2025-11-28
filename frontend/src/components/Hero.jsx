@@ -89,7 +89,7 @@ const Hero = () => {
               className="text-xl md:text-3xl text-gray-300 leading-relaxed max-w-4xl mx-auto mb-12"
             >
               <p className="mb-4">
-                Hello, I'm <span className="text-gradient font-bold">{settings.full_name}</span>, a <span className="text-white font-bold"><Typewriter words={settings.titles && settings.titles.length > 0 ? settings.titles : [settings.title]} /></span>.
+                Hello, I'm <span className="text-gradient font-bold">{settings.full_name}</span>, <span className="inline sm:hidden"><br /></span>a <span className="text-white font-bold"><Typewriter words={settings.titles && settings.titles.length > 0 ? settings.titles : [settings.title]} /></span>.
               </p>
               <p className="mb-2">{settings.tagline}</p>
               <p>{settings.bio}</p>
