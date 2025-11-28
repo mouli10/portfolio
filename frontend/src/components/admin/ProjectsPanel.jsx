@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FaPlus, FaTrash, FaEdit, FaGithub, FaExternalLinkAlt } from 'react-icons/fa'
 import axios from 'axios'
+import { toast } from 'react-hot-toast'
+import ConfirmationModal from './ConfirmationModal'
 
 const ProjectsPanel = ({ onStatsUpdate }) => {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [editingProject, setEditingProject] = useState(null)
+  const [confirmModal, setConfirmModal] = useState(null)
   const [isCreating, setIsCreating] = useState(false)
 
   const emptyProject = {
@@ -53,22 +56,30 @@ const ProjectsPanel = ({ onStatsUpdate }) => {
       fetchProjects()
     } catch (error) {
       console.error('Error saving project:', error)
-      alert('Failed to save project')
+      toast.error('Failed to save project')
     }
   }
 
-  const deleteProject = async (projectId) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) return
+  const handleDeleteClick = (project) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Project',
+      message: `Are you sure you want to delete "${project.title}"? This action cannot be undone.`,
+      onConfirm: () => handleDelete(project.id)
+    })
+  }
 
+  const handleDelete = async (projectId) => {
     try {
       const token = localStorage.getItem('adminToken')
       await axios.delete(`/api/admin/projects/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      setConfirmModal(null) // Close modal after successful deletion
       fetchProjects()
     } catch (error) {
       console.error('Error deleting project:', error)
-      alert('Failed to delete project')
+      toast.error('Failed to delete project')
     }
   }
 
@@ -223,59 +234,68 @@ const ProjectsPanel = ({ onStatsUpdate }) => {
       )}
 
       {/* Projects Grid */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {projects.map((project) => (
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-gray-800 rounded-lg overflow-hidden"
-          >
-            {project.image_url && (
-              <img
-                src={project.image_url}
-                alt={project.title}
-                className="w-full h-48 object-cover"
-              />
-            )}
-            <div className="p-4">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-xl font-bold text-white">{project.title}</h3>
-                {project.featured && (
-                  <span className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full text-xs">
-                    Featured
-                  </span>
-                )}
+      <AnimatePresence>
+        <div className="grid md:grid-cols-2 gap-6">
+          {projects.map((project) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gray-800 rounded-lg overflow-hidden"
+            >
+              {project.image_url && (
+                <img
+                  src={project.image_url}
+                  alt={project.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              <div className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="text-xl font-bold text-white">{project.title}</h3>
+                  {project.featured && (
+                    <span className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full text-xs">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                <p className="text-gray-400 text-sm mb-3 line-clamp-2">{project.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.technologies.map((tech) => (
+                    <span key={tech} className="px-2 py-1 bg-gray-700 text-primary-400 rounded text-xs">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditingProject(project)}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
+                  >
+                    <FaEdit /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(project)}
+                    className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
               </div>
-              <p className="text-gray-400 text-sm mb-3 line-clamp-2">{project.description}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.technologies.map((tech) => (
-                  <span key={tech} className="px-2 py-1 bg-gray-700 text-primary-400 rounded text-xs">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setEditingProject(project)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
-                >
-                  <FaEdit /> Edit
-                </button>
-                <button
-                  onClick={() => deleteProject(project.id)}
-                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      </AnimatePresence>
+
+      <ConfirmationModal
+        isOpen={confirmModal?.isOpen}
+        onClose={() => setConfirmModal(null)}
+        onConfirm={confirmModal?.onConfirm}
+        title={confirmModal?.title}
+        message={confirmModal?.message}
+      />
     </div>
   )
 }
 
 export default ProjectsPanel
-

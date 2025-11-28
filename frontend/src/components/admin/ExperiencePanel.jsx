@@ -1,12 +1,16 @@
+
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaBriefcase } from 'react-icons/fa'
 import axios from 'axios'
+import { toast } from 'react-hot-toast'
+import ConfirmationModal from './ConfirmationModal'
 
 const ExperiencePanel = ({ onStatsUpdate }) => {
     const [experiences, setExperiences] = useState([])
     const [loading, setLoading] = useState(true)
     const [editingExperience, setEditingExperience] = useState(null)
+    const [confirmModal, setConfirmModal] = useState(null)
     const [isCreating, setIsCreating] = useState(false)
 
     const emptyExperience = {
@@ -36,11 +40,11 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
     const saveExperience = async () => {
         try {
             const token = localStorage.getItem('adminToken')
-            const config = { headers: { Authorization: `Bearer ${token}` } }
+            const config = { headers: { Authorization: `Bearer ${token} ` } }
 
             if (editingExperience.id) {
                 // Update existing
-                await axios.put(`/api/admin/experience/${editingExperience.id}`, editingExperience, config)
+                await axios.put(`/ api / admin / experience / ${editingExperience.id} `, editingExperience, config)
             } else {
                 // Create new
                 await axios.post('/api/admin/experience', editingExperience, config)
@@ -51,22 +55,31 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
             fetchExperiences()
         } catch (error) {
             console.error('Error saving experience:', error)
-            alert('Failed to save experience')
+            toast.error('Failed to save experience')
         }
     }
 
-    const deleteExperience = async (experienceId) => {
-        if (!window.confirm('Are you sure you want to delete this experience?')) return
+    const handleDeleteClick = (experience) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Experience',
+            message: `Are you sure you want to delete "${experience.title} at ${experience.company}"? This action cannot be undone.`,
+            onConfirm: () => handleDelete(experience.id)
+        })
+    }
 
+    const handleDelete = async (experienceId) => {
         try {
             const token = localStorage.getItem('adminToken')
-            await axios.delete(`/api/admin/experience/${experienceId}`, {
-                headers: { Authorization: `Bearer ${token}` }
+            await axios.delete(`/ api / admin / experience / ${experienceId} `, {
+                headers: { Authorization: `Bearer ${token} ` }
             })
             fetchExperiences()
+            toast.success('Experience deleted successfully!')
+            setConfirmModal(null)
         } catch (error) {
             console.error('Error deleting experience:', error)
-            alert('Failed to delete experience')
+            toast.error('Failed to delete experience')
         }
     }
 
@@ -196,13 +209,14 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
             )}
 
             {/* Experience List */}
-            <div className="space-y-4">
+            <AnimatePresence>
                 {experiences.map((exp) => (
                     <motion.div
                         key={exp.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                        exit={{ opacity: 0, x: 20 }}
+                        className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4"
                     >
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -226,15 +240,23 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
                                 <FaEdit /> Edit
                             </button>
                             <button
-                                onClick={() => deleteExperience(exp.id)}
-                                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
+                                onClick={() => handleDeleteClick(exp)}
+                                className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
                             >
                                 <FaTrash />
                             </button>
                         </div>
                     </motion.div>
                 ))}
-            </div>
+            </AnimatePresence>
+
+            <ConfirmationModal
+                isOpen={confirmModal?.isOpen}
+                onClose={() => setConfirmModal(null)}
+                onConfirm={confirmModal?.onConfirm}
+                title={confirmModal?.title}
+                message={confirmModal?.message}
+            />
         </div>
     )
 }

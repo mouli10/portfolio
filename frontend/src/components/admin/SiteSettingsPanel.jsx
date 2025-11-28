@@ -110,15 +110,56 @@ const SiteSettingsPanel = () => {
                                 className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm text-gray-400 mb-2">Title *</label>
-                            <input
-                                type="text"
-                                value={settings.title}
-                                onChange={(e) => setSettings({ ...settings, title: e.target.value })}
-                                className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                            />
+
+                        {/* Rotating Titles Section */}
+                        <div className="md:col-span-2">
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-sm text-gray-400">Rotating Titles (Typewriter Effect)</label>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newTitles = settings.titles ? [...settings.titles, ''] : ['']
+                                        setSettings({ ...settings, titles: newTitles })
+                                    }}
+                                    className="flex items-center gap-1 px-3 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded text-sm transition-all"
+                                >
+                                    <FaPlus className="text-xs" /> Add Title
+                                </button>
+                            </div>
+                            <div className="space-y-2">
+                                {(settings.titles && settings.titles.length > 0 ? settings.titles : [settings.title]).map((title, index) => (
+                                    <div key={index} className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={title}
+                                            onChange={(e) => {
+                                                const newTitles = settings.titles ? [...settings.titles] : [settings.title]
+                                                newTitles[index] = e.target.value
+                                                setSettings({ ...settings, titles: newTitles })
+                                            }}
+                                            placeholder={`Title ${index + 1} (e.g., Full Stack Developer)`}
+                                            className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        />
+                                        {(settings.titles && settings.titles.length > 1) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newTitles = settings.titles.filter((_, i) => i !== index)
+                                                    setSettings({ ...settings, titles: newTitles })
+                                                }}
+                                                className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                                Add multiple titles to create a rotating typewriter effect on your homepage
+                            </p>
                         </div>
+
                         <div className="md:col-span-2">
                             <label className="block text-sm text-gray-400 mb-2">Tagline *</label>
                             <input
@@ -299,7 +340,7 @@ const SiteSettingsPanel = () => {
                         ))}
                     </div>
                     <p className="text-xs text-gray-500 mt-4">
-                        Icon names: FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaFacebook, FaYoutube, FaEnvelope, FaGlobe
+                        Icon names: FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaFacebook, FaYoutube, FaEnvelope, FaGlobe, FaPhone
                     </p>
                 </div>
 

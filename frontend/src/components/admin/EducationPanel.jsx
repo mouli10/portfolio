@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaUniversity, FaGraduationCap } from 'react-icons/fa'
 import axios from 'axios'
 
 import { toast } from 'react-hot-toast'
+import ConfirmationModal from './ConfirmationModal'
 
 const EducationPanel = ({ onStatsUpdate }) => {
     const [educationList, setEducationList] = useState([])
     const [loading, setLoading] = useState(true)
     const [editingEducation, setEditingEducation] = useState(null)
+    const [confirmModal, setConfirmModal] = useState(null)
     const [isCreating, setIsCreating] = useState(false)
 
     const emptyEducation = {
@@ -59,8 +61,16 @@ const EducationPanel = ({ onStatsUpdate }) => {
         }
     }
 
-    const deleteEducation = async (educationId) => {
-        if (!window.confirm('Are you sure you want to delete this education entry?')) return
+    const handleDeleteClick = (edu) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Education',
+            message: `Are you sure you want to delete "${edu.degree} at ${edu.institution}"? This action cannot be undone.`,
+            onConfirm: () => handleDelete(edu.id)
+        })
+    }
+
+    const handleDelete = async (educationId) => {
 
         try {
             const token = localStorage.getItem('adminToken')
@@ -69,6 +79,7 @@ const EducationPanel = ({ onStatsUpdate }) => {
             })
             fetchEducation()
             toast.success('Education deleted successfully')
+            setConfirmModal(null) // Close modal after successful deletion
         } catch (error) {
             console.error('Error deleting education:', error)
             toast.error('Failed to delete education')
@@ -213,51 +224,62 @@ const EducationPanel = ({ onStatsUpdate }) => {
 
             {/* Education List */}
             <div className="space-y-4">
-                {educationList.map((edu) => (
-                    <motion.div
-                        key={edu.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-                    >
-                        <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-primary-500/20 rounded-lg text-primary-400">
-                                    <FaUniversity />
+                <AnimatePresence>
+                    {educationList.map((edu) => (
+                        <motion.div
+                            key={edu.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                        >
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 bg-primary-500/20 rounded-lg text-primary-400">
+                                        <FaUniversity />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white">{edu.degree}</h3>
+                                        <p className="text-primary-400">{edu.institution}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-white">{edu.degree}</h3>
-                                    <p className="text-primary-400">{edu.institution}</p>
+                                <div className="flex gap-4 text-sm text-gray-500 mb-2">
+                                    <span>{edu.date}</span>
+                                    {edu.cgpa && (
+                                        <span className="flex items-center gap-1">
+                                            <FaGraduationCap /> CGPA: {edu.cgpa}
+                                        </span>
+                                    )}
                                 </div>
+                                <p className="text-gray-400 text-sm line-clamp-2">{edu.description}</p>
                             </div>
-                            <div className="flex gap-4 text-sm text-gray-500 mb-2">
-                                <span>{edu.date}</span>
-                                {edu.cgpa && (
-                                    <span className="flex items-center gap-1">
-                                        <FaGraduationCap /> CGPA: {edu.cgpa}
-                                    </span>
-                                )}
-                            </div>
-                            <p className="text-gray-400 text-sm line-clamp-2">{edu.description}</p>
-                        </div>
 
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <button
-                                onClick={() => setEditingEducation(edu)}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
-                            >
-                                <FaEdit /> Edit
-                            </button>
-                            <button
-                                onClick={() => deleteEducation(edu.id)}
-                                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
-                            >
-                                <FaTrash />
-                            </button>
-                        </div>
-                    </motion.div>
-                ))}
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <button
+                                    onClick={() => setEditingEducation(edu)}
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
+                                >
+                                    <FaEdit /> Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteClick(edu)}
+                                    className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
+                                >
+                                    <FaTrash />
+                                </button>
+                            </div>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
             </div>
+
+            <ConfirmationModal
+                isOpen={confirmModal?.isOpen}
+                onClose={() => setConfirmModal(null)}
+                onConfirm={confirmModal?.onConfirm}
+                title={confirmModal?.title}
+                message={confirmModal?.message}
+            />
         </div>
     )
 }

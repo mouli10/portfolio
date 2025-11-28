@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import axios from 'axios'
 import { FaCode, FaLaptopCode, FaRocket, FaUsers, FaLightbulb, FaCog, FaPalette, FaChartLine } from 'react-icons/fa'
+import { useData } from '../context/DataContext'
 
 const iconMap = {
   FaCode,
@@ -16,7 +17,7 @@ const iconMap = {
 }
 
 const About = () => {
-  const [settings, setSettings] = useState(null)
+  const { settings } = useData()
   const [aboutMe, setAboutMe] = useState(null)
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -24,15 +25,6 @@ const About = () => {
   })
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get('/api/site-settings')
-        setSettings(response.data)
-      } catch (error) {
-        console.error('Error fetching site settings:', error)
-      }
-    }
-
     const fetchAboutMe = async () => {
       try {
         const response = await axios.get('/api/about-me')
@@ -42,7 +34,6 @@ const About = () => {
       }
     }
 
-    fetchSettings()
     fetchAboutMe()
   }, [])
 

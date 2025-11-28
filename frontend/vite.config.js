@@ -5,8 +5,18 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://portfolio-backend-3jfv.onrender.com/',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
+      }
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'framer-motion', 'react-router-dom', 'axios'],
+          ui: ['react-icons', 'react-hot-toast']
+        }
       }
     }
   }

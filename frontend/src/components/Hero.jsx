@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaGithub, FaLinkedin, FaInstagram, FaEnvelope, FaTwitter, FaFacebook, FaYoutube, FaGlobe, FaLink } from 'react-icons/fa'
+import { FaGithub, FaLinkedin, FaEnvelope, FaMobile, FaInstagram, FaTwitter, FaFacebook, FaYoutube, FaGlobe, FaLink, FaPhone } from 'react-icons/fa'
 import { HiArrowDown } from 'react-icons/hi'
-import axios from 'axios'
+import Typewriter from './Typewriter'
+import { useData } from '../context/DataContext'
 
 const iconMap = {
   FaGithub,
@@ -13,27 +14,13 @@ const iconMap = {
   FaFacebook,
   FaYoutube,
   FaGlobe,
-  FaLink
+  FaLink,
+  FaPhone
 }
 
 const Hero = () => {
   const [showInstagramPopup, setShowInstagramPopup] = useState(false)
-  const [settings, setSettings] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get('/api/site-settings')
-        setSettings(response.data)
-        setLoading(false)
-      } catch (error) {
-        console.error('Error fetching site settings:', error)
-        setLoading(false)
-      }
-    }
-    fetchSettings()
-  }, [])
+  const { settings, loading } = useData()
 
   if (loading || !settings) {
     return (
@@ -95,14 +82,18 @@ const Hero = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="text-xl md:text-3xl text-gray-300 leading-relaxed max-w-4xl mx-auto mb-12"
             >
-              Hello, I'm <span className="text-gradient font-bold">{settings.full_name}</span>, a <span className="text-white font-bold">{settings.title}</span>. {settings.tagline} {settings.bio}
-            </motion.p>
+              <p className="mb-4">
+                Hello, I'm <span className="text-gradient font-bold">{settings.full_name}</span>, a <span className="text-white font-bold"><Typewriter words={settings.titles && settings.titles.length > 0 ? settings.titles : [settings.title]} /></span>.
+              </p>
+              <p className="mb-2">{settings.tagline}</p>
+              <p>{settings.bio}</p>
+            </motion.div>
 
             {/* Social Links */}
             <motion.div

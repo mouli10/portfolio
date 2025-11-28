@@ -3,25 +3,27 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { FaGithub, FaExternalLinkAlt, FaStar } from 'react-icons/fa'
 import axios from 'axios'
+import { useData } from '../context/DataContext'
 
 const Projects = () => {
   const [projects, setProjects] = useState([])
   const [filter, setFilter] = useState('all')
+  const { settings } = useData()
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   })
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('/api/projects')
-        setProjects(response.data)
+        const projectsRes = await axios.get('/api/projects')
+        setProjects(projectsRes.data)
       } catch (error) {
-        console.error('Error fetching projects:', error)
+        console.error('Error fetching data:', error)
       }
     }
-    fetchProjects()
+    fetchData()
   }, [])
 
   const filteredProjects = filter === 'featured'
@@ -184,7 +186,7 @@ const Projects = () => {
               className="text-center mt-12"
             >
               <motion.a
-                href="https://github.com"
+                href={settings?.social_links?.find(link => link.platform === 'GitHub')?.url || 'https://github.com'}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}

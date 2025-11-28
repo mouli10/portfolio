@@ -1,17 +1,22 @@
+
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPlus, FaTrash, FaTimes, FaExclamationTriangle } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaExclamationTriangle } from 'react-icons/fa'
 import axios from 'axios'
 
 import { toast } from 'react-hot-toast'
+import ConfirmationModal from './ConfirmationModal'
 
 const SkillCategoriesPanel = ({ onStatsUpdate }) => {
     const [categories, setCategories] = useState([])
     const [skills, setSkills] = useState([])
     const [loading, setLoading] = useState(true)
     const [newCategoryName, setNewCategoryName] = useState('')
+    const [editingCategory, setEditingCategory] = useState(null)
+    const [editName, setEditName] = useState('')
     const [isAdding, setIsAdding] = useState(false)
     const [deleteModal, setDeleteModal] = useState(null) // {category, skillCount}
+    const [confirmModal, setConfirmModal] = useState(null) // {isOpen, title, message, onConfirm}
     const [migrateTo, setMigrateTo] = useState('')
 
     useEffect(() => {
@@ -45,7 +50,7 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
             const token = localStorage.getItem('adminToken')
             await axios.post('/api/admin/skill-categories',
                 { name: newCategoryName.trim() },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token} ` } }
             )
 
             // ... imports
@@ -62,15 +67,54 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
 
     // ...
 
+    const startEditing = (category) => {
+        setEditingCategory(category)
+        setEditName(category.name)
+    }
+
+    const handleUpdate = async () => {
+        if (!editName.trim()) return
+
+        try {
+            const token = localStorage.getItem('adminToken')
+            await axios.put(`/api/admin/skill-categories/${editingCategory.id}`,
+                { name: editName.trim() },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+
+            setEditingCategory(null)
+            setEditName('')
+            fetchData()
+            toast.success('Category updated successfully')
+        } catch (error) {
+            console.error('Error updating category:', error)
+            toast.error(error.response?.data?.detail || 'Failed to update category')
+        }
+    }
+
+    const handleDeleteClick = (category) => {
+        const skillCount = getSkillCount(category.name)
+        if (skillCount > 0) {
+            setDeleteModal({ category, skillCount })
+        } else {
+            setConfirmModal({
+                isOpen: true,
+                title: 'Delete Category',
+                message: `Are you sure you want to delete "${category.name}" ? This action cannot be undone.`,
+                onConfirm: () => handleDelete(category.id)
+            })
+        }
+    }
+
     const handleDelete = async (categoryId, migrateToId) => {
         try {
             const token = localStorage.getItem('adminToken')
             const url = migrateToId
-                ? `/api/admin/skill-categories/${categoryId}?migrate_to=${migrateToId}`
-                : `/api/admin/skill-categories/${categoryId}`
+                ? `/ api / admin / skill - categories / ${categoryId}?migrate_to = ${migrateToId} `
+                : `/ api / admin / skill - categories / ${categoryId} `
 
             await axios.delete(url, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token} ` }
             })
 
             setDeleteModal(null)
@@ -155,16 +199,56 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
                             animate={{ opacity: 1, scale: 1 }}
                             className="bg-gray-800 rounded-lg p-4 flex items-center justify-between"
                         >
-                            <div>
-                                <h3 className="text-lg font-semibold text-white">{category.name}</h3>
-                                <p className="text-sm text-gray-400">{skillCount} skill{skillCount !== 1 ? 's' : ''}</p>
+                            <div className="flex-1">
+                                {editingCategory?.id === category.id ? (
+                                    <div className="flex items-center gap-2 mr-2">
+                                        <input
+                                            type="text"
+                                            value={editName}
+                                            onChange={(e) => setEditName(e.target.value)}
+                                            className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm"
+                                            autoFocus
+                                        />
+                                        <button
+                                            onClick={handleUpdate}
+                                            className="p-1 text-green-400 hover:bg-green-500/20 rounded transition-all"
+                                            title="Save"
+                                        >
+                                            <FaSave />
+                                        </button>
+                                        <button
+                                            onClick={() => setEditingCategory(null)}
+                                            className="p-1 text-gray-400 hover:bg-gray-500/20 rounded transition-all"
+                                            title="Cancel"
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <h3 className="text-lg font-semibold text-white">{category.name}</h3>
+                                        <p className="text-sm text-gray-400">{skillCount} skill{skillCount !== 1 ? 's' : ''}</p>
+                                    </>
+                                )}
                             </div>
-                            <button
-                                onClick={() => handleDeleteClick(category)}
-                                className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
-                            >
-                                <FaTrash />
-                            </button>
+                            <div className="flex gap-1">
+                                {!editingCategory && (
+                                    <button
+                                        onClick={() => startEditing(category)}
+                                        className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all"
+                                        title="Edit"
+                                    >
+                                        <FaEdit />
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => handleDeleteClick(category)}
+                                    className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
+                                    title="Delete"
+                                >
+                                    <FaTrash />
+                                </button>
+                            </div>
                         </motion.div>
                     )
                 })}
@@ -233,7 +317,15 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+
+            <ConfirmationModal
+                isOpen={confirmModal?.isOpen}
+                onClose={() => setConfirmModal(null)}
+                onConfirm={confirmModal?.onConfirm}
+                title={confirmModal?.title}
+                message={confirmModal?.message}
+            />
+        </div >
     )
 }
 

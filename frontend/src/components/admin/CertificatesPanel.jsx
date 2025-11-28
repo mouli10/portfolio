@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaAward, FaCertificate } from 'react-icons/fa'
 import axios from 'axios'
 
 import { toast } from 'react-hot-toast'
+import ConfirmationModal from './ConfirmationModal'
 
 const CertificatesPanel = ({ onStatsUpdate }) => {
     const [certificates, setCertificates] = useState([])
     const [loading, setLoading] = useState(true)
     const [editingCertificate, setEditingCertificate] = useState(null)
+    const [confirmModal, setConfirmModal] = useState(null)
     const [isCreating, setIsCreating] = useState(false)
 
     const emptyCertificate = {
@@ -59,9 +61,16 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
         }
     }
 
-    const deleteCertificate = async (certificateId) => {
-        if (!window.confirm('Are you sure you want to delete this certificate?')) return
+    const handleDeleteClick = (cert) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Certificate',
+            message: `Are you sure you want to delete "${cert.title}"? This action cannot be undone.`,
+            onConfirm: () => handleDelete(cert.id)
+        })
+    }
 
+    const handleDelete = async (certificateId) => {
         try {
             const token = localStorage.getItem('adminToken')
             await axios.delete(`/api/admin/certificates/${certificateId}`, {
@@ -69,6 +78,7 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
             })
             fetchCertificates()
             toast.success('Certificate deleted successfully')
+            setConfirmModal(null) // Close modal after successful deletion
         } catch (error) {
             console.error('Error deleting certificate:', error)
             toast.error('Failed to delete certificate')
@@ -217,44 +227,54 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
 
             {/* Certificates List */}
             <div className="space-y-4">
-                {certificates.map((cert) => (
-                    <motion.div
-                        key={cert.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-                    >
-                        <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-primary-500/20 rounded-lg text-primary-400">
-                                    <FaCertificate />
+                <AnimatePresence>
+                    {certificates.map((cert) => (
+                        <motion.div
+                            key={cert.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                        >
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 bg-primary-500/20 rounded-lg text-primary-400">
+                                        <FaCertificate />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white">{cert.title}</h3>
+                                        <p className="text-primary-400">{cert.issuer}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-white">{cert.title}</h3>
-                                    <p className="text-primary-400">{cert.issuer}</p>
-                                </div>
+                                <p className="text-sm text-gray-500 mb-2">{cert.date}</p>
+                                <p className="text-gray-400 text-sm line-clamp-2">{cert.description}</p>
                             </div>
-                            <p className="text-sm text-gray-500 mb-2">{cert.date}</p>
-                            <p className="text-gray-400 text-sm line-clamp-2">{cert.description}</p>
-                        </div>
 
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <button
-                                onClick={() => setEditingCertificate(cert)}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
-                            >
-                                <FaEdit /> Edit
-                            </button>
-                            <button
-                                onClick={() => deleteCertificate(cert.id)}
-                                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
-                            >
-                                <FaTrash />
-                            </button>
-                        </div>
-                    </motion.div>
-                ))}
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <button
+                                    onClick={() => setEditingCertificate(cert)}
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
+                                >
+                                    <FaEdit /> Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteClick(cert)}
+                                    className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
+                                >                              <FaTrash />
+                                </button>
+                            </div>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
             </div>
+
+            <ConfirmationModal
+                isOpen={confirmModal?.isOpen}
+                onClose={() => setConfirmModal(null)}
+                onConfirm={confirmModal?.onConfirm}
+                title={confirmModal?.title}
+                message={confirmModal?.message}
+            />
         </div>
     )
 }

@@ -1,14 +1,28 @@
 import { motion } from 'framer-motion'
-import { FaGithub, FaLinkedin, FaTwitter, FaHeart } from 'react-icons/fa'
+import { FaGithub, FaLinkedin, FaTwitter, FaHeart, FaInstagram, FaFacebook, FaYoutube, FaGlobe, FaLink, FaEnvelope, FaPhone } from 'react-icons/fa'
+import { useData } from '../context/DataContext'
+
+const iconMap = {
+  'GitHub': FaGithub,
+  'LinkedIn': FaLinkedin,
+  'Twitter': FaTwitter,
+  'Instagram': FaInstagram,
+  'Facebook': FaFacebook,
+  'YouTube': FaYoutube,
+  'Website': FaGlobe,
+  'Email': FaEnvelope,
+  'Phone': FaPhone
+}
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+  const { settings } = useData()
 
-  const socialLinks = [
-    { icon: FaGithub, href: 'https://github.com', label: 'GitHub' },
-    { icon: FaLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: FaTwitter, href: 'https://twitter.com', label: 'Twitter' },
-  ]
+  const socialLinks = settings?.social_links?.map(link => ({
+    icon: iconMap[link.platform] || FaLink,
+    href: link.url,
+    label: link.platform
+  })) || []
 
   const quickLinks = [
     { name: 'Home', href: '#home' },
@@ -24,7 +38,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm m-0">
-            © {currentYear} Portfolio. All rights reserved.
+            © {currentYear} Mouli's Portfolio. All rights reserved.
           </p>
           <p className="text-gray-400 text-sm flex items-center gap-2 m-0">
             Made with <FaHeart className="text-red-500" /> while sipping Coffee

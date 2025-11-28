@@ -1,13 +1,17 @@
+
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa'
 import axios from 'axios'
+import { toast } from 'react-hot-toast'
+import ConfirmationModal from './ConfirmationModal'
 
 const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
   const [skills, setSkills] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [editingSkill, setEditingSkill] = useState(null)
+  const [confirmModal, setConfirmModal] = useState(null)
   const [isCreating, setIsCreating] = useState(false)
   const [filterCategory, setFilterCategory] = useState('all')
 
@@ -49,11 +53,11 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
   const saveSkill = async () => {
     try {
       const token = localStorage.getItem('adminToken')
-      const config = { headers: { Authorization: `Bearer ${token}` } }
+      const config = { headers: { Authorization: `Bearer ${token} ` } }
 
       if (editingSkill.id) {
         // Update existing
-        await axios.put(`/api/admin/skills/${editingSkill.id}`, editingSkill, config)
+        await axios.put(`/ api / admin / skills / ${editingSkill.id} `, editingSkill, config)
       } else {
         // Create new
         await axios.post('/api/admin/skills', editingSkill, config)
@@ -64,22 +68,32 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
       fetchSkills()
     } catch (error) {
       console.error('Error saving skill:', error)
-      alert('Failed to save skill')
+      toast.error('Failed to save skill')
     }
   }
 
-  const deleteSkill = async (skillId) => {
-    if (!window.confirm('Are you sure you want to delete this skill?')) return
+  const handleDeleteClick = (skill) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Skill',
+      message: `Are you sure you want to delete "${skill.name}"? This action cannot be undone.`,
+      onConfirm: () => handleDelete(skill.id)
+    })
+  }
+
+  const handleDelete = async (skillId) => {
 
     try {
       const token = localStorage.getItem('adminToken')
-      await axios.delete(`/api/admin/skills/${skillId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.delete(`/ api / admin / skills / ${skillId} `, {
+        headers: { Authorization: `Bearer ${token} ` }
       })
       fetchSkills()
+      toast.success('Skill deleted successfully!')
+      setConfirmModal(null) // Close modal after successful deletion
     } catch (error) {
       console.error('Error deleting skill:', error)
-      alert('Failed to delete skill')
+      toast.error('Failed to delete skill')
     }
   }
 
@@ -124,10 +138,10 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilterCategory('all')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all ${filterCategory === 'all'
+          className={`px - 4 py - 2 rounded - lg font - semibold transition - all ${filterCategory === 'all'
             ? 'bg-primary-500 text-white'
             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
+            } `}
         >
           All
         </button>
@@ -135,10 +149,10 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
           <button
             key={category.id}
             onClick={() => setFilterCategory(category.name)}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all ${filterCategory === category.name
+            className={`px - 4 py - 2 rounded - lg font - semibold transition - all ${filterCategory === category.name
               ? 'bg-primary-500 text-white'
               : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
+              } `}
           >
             {category.name}
           </button>
@@ -245,57 +259,67 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
       )}
 
       {/* Skills Grid */}
-      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredSkills.map((skill) => (
-          <motion.div
-            key={skill.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.02 }}
-            className="bg-gray-800 rounded-lg p-4 text-center"
-          >
-            <div className="text-4xl mb-3">
-              {skill.icon ? (
-                <img
-                  src={skill.icon}
-                  alt={skill.name}
-                  className="w-12 h-12 mx-auto object-contain"
+      <AnimatePresence>
+        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredSkills.map((skill) => (
+            <motion.div
+              key={skill.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.02 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-gray-800 rounded-lg p-4 text-center"
+            >
+              <div className="text-4xl mb-3">
+                {skill.icon ? (
+                  <img
+                    src={skill.icon}
+                    alt={skill.name}
+                    className="w-12 h-12 mx-auto object-contain"
+                  />
+                ) : (
+                  <span>💻</span>
+                )}
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-1">{skill.name}</h3>
+              <span className="inline-block px-3 py-1 bg-gray-700 text-primary-400 rounded-full text-xs mb-3">
+                {skill.category}
+              </span>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                <div
+                  className="bg-gradient-to-r from-primary-500 to-purple-500 h-2 rounded-full"
+                  style={{ width: `${skill.level}% ` }}
                 />
-              ) : (
-                <span>💻</span>
-              )}
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-1">{skill.name}</h3>
-            <span className="inline-block px-3 py-1 bg-gray-700 text-primary-400 rounded-full text-xs mb-3">
-              {skill.category}
-            </span>
+              </div>
+              <span className="text-gray-400 text-sm">{skill.level}%</span>
 
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
-              <div
-                className="bg-gradient-to-r from-primary-500 to-purple-500 h-2 rounded-full"
-                style={{ width: `${skill.level}%` }}
-              />
-            </div>
-            <span className="text-gray-400 text-sm">{skill.level}%</span>
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => setEditingSkill(skill)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all text-sm"
+                >
+                  <FaEdit /> Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(skill)}
+                  className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
+                >              <FaTrash />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </AnimatePresence>
 
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={() => setEditingSkill(skill)}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all text-sm"
-              >
-                <FaEdit /> Edit
-              </button>
-              <button
-                onClick={() => deleteSkill(skill.id)}
-                className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      <ConfirmationModal
+        isOpen={confirmModal?.isOpen}
+        onClose={() => setConfirmModal(null)}
+        onConfirm={confirmModal?.onConfirm}
+        title={confirmModal?.title}
+        message={confirmModal?.message}
+      />
     </div>
   )
 }
