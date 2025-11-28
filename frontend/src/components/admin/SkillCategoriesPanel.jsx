@@ -110,14 +110,15 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
         try {
             const token = localStorage.getItem('adminToken')
             const url = migrateToId
-                ? `/ api / admin / skill - categories / ${categoryId}?migrate_to = ${migrateToId} `
-                : `/ api / admin / skill - categories / ${categoryId} `
+                ? `/api/admin/skill-categories/${categoryId}?migrate_to=${migrateToId}`
+                : `/api/admin/skill-categories/${categoryId}`
 
             await axios.delete(url, {
-                headers: { Authorization: `Bearer ${token} ` }
+                headers: { Authorization: `Bearer ${token}` }
             })
 
             setDeleteModal(null)
+            setConfirmModal(null)
             fetchData()
             toast.success('Category deleted successfully')
         } catch (error) {
