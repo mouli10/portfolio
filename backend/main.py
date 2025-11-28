@@ -141,6 +141,7 @@ class SiteSettings(BaseModel):
     id: int
     full_name: str
     title: str
+    titles: Optional[List[str]] = []
     tagline: str
     bio: str
     profile_image_url: Optional[str]
@@ -159,6 +160,7 @@ class SiteSettings(BaseModel):
 class SiteSettingsUpdate(BaseModel):
     full_name: Optional[str] = None
     title: Optional[str] = None
+    titles: Optional[List[str]] = None
     tagline: Optional[str] = None
     bio: Optional[str] = None
     profile_image_url: Optional[str] = None
@@ -501,6 +503,30 @@ async def create_skill_category(category: SkillCategoryCreate):
         print(f"Error creating skill category: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.put("/api/admin/skill-categories/{category_id}", dependencies=[Depends(verify_admin_token)])
+async def update_skill_category(category_id: int, category: SkillCategoryCreate):
+    """Update a skill category name"""
+    try:
+        # Get old name first to update skills if needed
+        old_category = supabase.table("skill_categories").select("name").eq("id", category_id).execute()
+        if not old_category.data:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        old_name = old_category.data[0]["name"]
+        new_name = category.name
+        
+        # Update category
+        response = supabase.table("skill_categories").update({"name": new_name}).eq("id", category_id).execute()
+        
+        # Update all skills associated with this category
+        if old_name != new_name:
+            supabase.table("skills").update({"category": new_name}).eq("category", old_name).execute()
+            
+        return response.data[0]
+    except Exception as e:
+        print(f"Error updating skill category: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.delete("/api/admin/skill-categories/{category_id}", dependencies=[Depends(verify_admin_token)])
 async def delete_skill_category(category_id: int, migrate_to: Optional[int] = None):
     """Delete a skill category, optionally migrating skills to another category"""
@@ -592,13 +618,31 @@ async def get_site_settings():
 @app.put("/api/admin/site-settings", response_model=SiteSettings, dependencies=[Depends(verify_admin_token)])
 async def update_site_settings(settings: SiteSettingsUpdate):
     try:
-        # Only update fields that are provided
-        update_data = {k: v for k, v in settings.dict().items() if v is not None}
-        result = supabase.table("site_settings").update(update_data).eq("id", 1).execute()
+        # Convert settings to dict and filter out None values
+        settings_dict = settings.dict(exclude_none=True)
+        
+        print(f"DEBUG: Received settings: {settings_dict}")
+        
+        # Ensure titles is properly formatted as a list for JSONB
+        if 'titles' in settings_dict and settings_dict['titles'] is not None:
+            # Make sure it's a list
+            if not isinstance(settings_dict['titles'], list):
+                settings_dict['titles'] = [settings_dict['titles']]
+            print(f"DEBUG: Titles field: {settings_dict['titles']}")
+        
+        print(f"DEBUG: Update data being sent to DB: {settings_dict}")
+        
+        result = supabase.table("site_settings").update(settings_dict).eq("id", 1).execute()
+        
+        print(f"DEBUG: Database result: {result.data}")
+        
         if result.data and len(result.data) > 0:
             return result.data[0]
         raise HTTPException(status_code=404, detail="Site settings not found")
     except Exception as e:
+        print(f"DEBUG: Error updating settings: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 # About Me Endpoints
