@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import Portfolio from './pages/Portfolio'
 import Admin from './pages/Admin'
 import { DataProvider, useData } from './context/DataContext'
@@ -67,6 +68,7 @@ function AppContent() {
   return (
     <Router>
       <Toaster position="top-right" />
+      <SpeedInsights />
       <Routes>
         <Route path="/" element={<Portfolio />} />
         <Route path="/admin" element={<Admin />} />
