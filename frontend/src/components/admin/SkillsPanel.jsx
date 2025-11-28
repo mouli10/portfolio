@@ -53,11 +53,11 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
   const saveSkill = async () => {
     try {
       const token = localStorage.getItem('adminToken')
-      const config = { headers: { Authorization: `Bearer ${token} ` } }
+      const config = { headers: { Authorization: `Bearer ${token}` } }
 
       if (editingSkill.id) {
         // Update existing
-        await axios.put(`/ api / admin / skills / ${editingSkill.id} `, editingSkill, config)
+        await axios.put(`/api/admin/skills/${editingSkill.id}`, editingSkill, config)
       } else {
         // Create new
         await axios.post('/api/admin/skills', editingSkill, config)
@@ -85,8 +85,8 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
 
     try {
       const token = localStorage.getItem('adminToken')
-      await axios.delete(`/ api / admin / skills / ${skillId} `, {
-        headers: { Authorization: `Bearer ${token} ` }
+      await axios.delete(`/api/admin/skills/${skillId}`, {
+        headers: { Authorization: `Bearer ${token}` }
       })
       fetchSkills()
       toast.success('Skill deleted successfully!')
