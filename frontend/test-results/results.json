@@ -1,0 +1,1423 @@
+{
+  "config": {
+    "configFile": "/Users/moulivunnam/Documents/new start/portfolio/frontend/playwright.config.js",
+    "rootDir": "/Users/moulivunnam/Documents/new start/portfolio/frontend/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/moulivunnam/Documents/new start/portfolio/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/moulivunnam/Documents/new start/portfolio/frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [
+    {
+      "title": "admin.spec.js",
+      "file": "admin.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Admin Panel Tests",
+          "file": "admin.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "admin panel loads",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1584,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:33.173Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-0d61eb8f92ca1d283759",
+              "file": "admin.spec.js",
+              "line": 33,
+              "column": 5
+            },
+            {
+              "title": "admin tabs are accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2134,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:35.315Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-97490de4abd4f2fd1264",
+              "file": "admin.spec.js",
+              "line": 53,
+              "column": 5
+            },
+            {
+              "title": "skill categories panel works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1012,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:37.456Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-2248d8355bf29b8486b8",
+              "file": "admin.spec.js",
+              "line": 88,
+              "column": 5
+            },
+            {
+              "title": "no 404 errors on admin panel",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3055,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:38.474Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-f2ad9ecfd90066606894",
+              "file": "admin.spec.js",
+              "line": 114,
+              "column": 5
+            },
+            {
+              "title": "no 500 errors on admin panel",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3138,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:41.537Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-12a40cc53b950e822db5",
+              "file": "admin.spec.js",
+              "line": 132,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "comprehensive-admin.spec.js",
+      "file": "comprehensive-admin.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Comprehensive Admin Panel Tests",
+          "file": "comprehensive-admin.spec.js",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Skills - Full CRUD Operations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 976,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Skills - Full CRUD Operations\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Navigate to Skills tab\n"
+                        },
+                        {
+                          "text": "\n✅ Skills CRUD test completed successfully\n"
+                        },
+                        {
+                          "text": "\n────────────────────────────────────────────────────────────────────────────────\n"
+                        },
+                        {
+                          "text": "📊 Test Summary:\n"
+                        },
+                        {
+                          "text": "   API Calls: 2\n"
+                        },
+                        {
+                          "text": "   Errors: 0\n"
+                        },
+                        {
+                          "text": "────────────────────────────────────────────────────────────────────────────────\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:44.692Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8a3b60e4c9e4cf82f2f-6da9377d0b501012db99",
+              "file": "comprehensive-admin.spec.js",
+              "line": 75,
+              "column": 5
+            },
+            {
+              "title": "Experience - Full CRUD Operations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1009,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Experience - Full CRUD Operations\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Navigate to Experience tab\n"
+                        },
+                        {
+                          "text": "\n✅ Experience CRUD test completed successfully\n"
+                        },
+                        {
+                          "text": "\n────────────────────────────────────────────────────────────────────────────────\n"
+                        },
+                        {
+                          "text": "📊 Test Summary:\n"
+                        },
+                        {
+                          "text": "   API Calls: 2\n"
+                        },
+                        {
+                          "text": "   Errors: 0\n"
+                        },
+                        {
+                          "text": "────────────────────────────────────────────────────────────────────────────────\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:45.674Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8a3b60e4c9e4cf82f2f-25926cb90b8b43bd1e7f",
+              "file": "comprehensive-admin.spec.js",
+              "line": 193,
+              "column": 5
+            },
+            {
+              "title": "Site Settings - Update and Verify",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1028,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Site Settings - Update and Verify\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Navigate to Settings tab\n"
+                        },
+                        {
+                          "text": "\n✅ Settings test completed successfully\n"
+                        },
+                        {
+                          "text": "\n────────────────────────────────────────────────────────────────────────────────\n"
+                        },
+                        {
+                          "text": "📊 Test Summary:\n"
+                        },
+                        {
+                          "text": "   API Calls: 2\n"
+                        },
+                        {
+                          "text": "   Errors: 0\n"
+                        },
+                        {
+                          "text": "────────────────────────────────────────────────────────────────────────────────\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:46.689Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8a3b60e4c9e4cf82f2f-c82a634b41e5502a5d2e",
+              "file": "comprehensive-admin.spec.js",
+              "line": 237,
+              "column": 5
+            },
+            {
+              "title": "No Network Errors Across All Tabs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1008,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: No Network Errors Across All Tabs\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "📍 Navigated to: http://localhost:5173/admin\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🌐 GET http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "✅ 200 http://localhost:5173/api/site-settings\n"
+                        },
+                        {
+                          "text": "🎯 Testing all admin tabs for network errors\n\n"
+                        },
+                        {
+                          "text": "\n✅ All tabs checked - no network errors found\n"
+                        },
+                        {
+                          "text": "\n────────────────────────────────────────────────────────────────────────────────\n"
+                        },
+                        {
+                          "text": "📊 Test Summary:\n"
+                        },
+                        {
+                          "text": "   API Calls: 2\n"
+                        },
+                        {
+                          "text": "   Errors: 0\n"
+                        },
+                        {
+                          "text": "────────────────────────────────────────────────────────────────────────────────\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:47.724Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8a3b60e4c9e4cf82f2f-df4d6800f83891896757",
+              "file": "comprehensive-admin.spec.js",
+              "line": 274,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "comprehensive-frontend.spec.js",
+      "file": "comprehensive-frontend.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Comprehensive Frontend Tests",
+          "file": "comprehensive-frontend.spec.js",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Hero Section - Complete Functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2427,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Hero Section - Complete Functionality\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Check Hero section loads\n"
+                        },
+                        {
+                          "text": "✓ Hero section visible\n"
+                        },
+                        {
+                          "text": "\n🎯 Step 2: Verify profile image loads\n"
+                        },
+                        {
+                          "text": "✓ Profile image loaded\n"
+                        },
+                        {
+                          "text": "\n🎯 Step 3: Check social links\n"
+                        },
+                        {
+                          "text": "✓ Found 7 social links\n"
+                        },
+                        {
+                          "text": "\n✅ Hero section test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:48.745Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-2e423ebe13eb73d6d6e4",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "Navigation - All Sections Accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8681,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Navigation - All Sections Accessible\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "🎯 Testing navigation to all sections\n\n"
+                        },
+                        {
+                          "text": "📍 Navigating to Projects...\n"
+                        },
+                        {
+                          "text": "✓ Projects section reached\n"
+                        },
+                        {
+                          "text": "📍 Navigating to Skills...\n"
+                        },
+                        {
+                          "text": "✓ Skills section reached\n"
+                        },
+                        {
+                          "text": "📍 Navigating to Experience...\n"
+                        },
+                        {
+                          "text": "✓ Experience section reached\n"
+                        },
+                        {
+                          "text": "📍 Navigating to Education...\n"
+                        },
+                        {
+                          "text": "✓ Education section reached\n"
+                        },
+                        {
+                          "text": "📍 Navigating to Certificates...\n"
+                        },
+                        {
+                          "text": "✓ Certificates section reached\n"
+                        },
+                        {
+                          "text": "📍 Navigating to Contact...\n"
+                        },
+                        {
+                          "text": "✓ Contact section reached\n"
+                        },
+                        {
+                          "text": "\n✅ Navigation test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:51.178Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-a1cf282e48c58c43188f",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Projects Section - All Projects Display",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3220,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Projects Section - All Projects Display\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Check Projects section\n"
+                        },
+                        {
+                          "text": "✓ Projects section visible\n"
+                        },
+                        {
+                          "text": "\n🎯 Step 2: Count project cards\n"
+                        },
+                        {
+                          "text": "✓ Found 0 project cards\n"
+                        },
+                        {
+                          "text": "\n🎯 Step 3: Check project images load\n"
+                        },
+                        {
+                          "text": "✓ Found 43 project images\n"
+                        },
+                        {
+                          "text": "\n✅ Projects section test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:27:59.865Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-1393ad3ce5f09f6c7703",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 62,
+              "column": 5
+            },
+            {
+              "title": "Skills Section - Category Filter Works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3211,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Skills Section - Category Filter Works\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Check Skills section\n"
+                        },
+                        {
+                          "text": "✓ Skills section visible\n"
+                        },
+                        {
+                          "text": "\n🎯 Step 2: Test category filters\n"
+                        },
+                        {
+                          "text": "\n✅ Skills section test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:03.101Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-50780ef8519308b36d2c",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "Contact Form - Validation Works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3694,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Contact Form - Validation Works\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Locate contact form\n"
+                        },
+                        {
+                          "text": "✓ Contact form found\n"
+                        },
+                        {
+                          "text": "\n🎯 Step 2: Test form validation\n"
+                        },
+                        {
+                          "text": "✓ Submit button clicked (empty form)\n"
+                        },
+                        {
+                          "text": "✓ Form validation triggered\n"
+                        },
+                        {
+                          "text": "\n🎯 Step 3: Fill form with valid data\n"
+                        },
+                        {
+                          "text": "✓ Filled name\n"
+                        },
+                        {
+                          "text": "✓ Filled email\n"
+                        },
+                        {
+                          "text": "✓ Filled message\n"
+                        },
+                        {
+                          "text": "\n✅ Contact form test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:06.318Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-785352b2198f1edd62cd",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 111,
+              "column": 5
+            },
+            {
+              "title": "Mobile Menu - Works Correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2009,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: Mobile Menu - Works Correctly\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "🎯 Step 1: Check for mobile menu button\n"
+                        },
+                        {
+                          "text": "\n✅ Mobile menu test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:10.019Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-8120c3f8980a719f62ca",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 156,
+              "column": 5
+            },
+            {
+              "title": "All Images Have Alt Text",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4363,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: All Images Have Alt Text\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "🎯 Checking all images for alt text\n\n"
+                        },
+                        {
+                          "text": "\n✓ Checked 47 images\n"
+                        },
+                        {
+                          "text": "✓ Missing alt text: 0\n"
+                        },
+                        {
+                          "text": "\n✅ All images have alt text\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:12.034Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-7c082bb0b47dd83108f8",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 182,
+              "column": 5
+            },
+            {
+              "title": "No Console Errors on Page Load",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4238,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n================================================================================\n"
+                        },
+                        {
+                          "text": "🧪 Starting Test: No Console Errors on Page Load\n"
+                        },
+                        {
+                          "text": "================================================================================\n\n"
+                        },
+                        {
+                          "text": "✅ No console errors on page load\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:16.402Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "22cd325320bcfab6768c-02b50bf07be475b7918d",
+              "file": "comprehensive-frontend.spec.js",
+              "line": 209,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "frontend.spec.js",
+      "file": "frontend.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Portfolio Frontend Tests",
+          "file": "frontend.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "homepage loads without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2214,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:20.656Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-5a2cca59f22037b8de0f",
+              "file": "frontend.spec.js",
+              "line": 33,
+              "column": 5
+            },
+            {
+              "title": "all main sections are visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2154,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:22.875Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-7a9cb1ed84f53b563452",
+              "file": "frontend.spec.js",
+              "line": 57,
+              "column": 5
+            },
+            {
+              "title": "navigation works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1866,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:25.035Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-96643f308f0ffdb8fa89",
+              "file": "frontend.spec.js",
+              "line": 71,
+              "column": 5
+            },
+            {
+              "title": "skills section displays and filters work",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1932,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:26.905Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-911f614289a5f6871dca",
+              "file": "frontend.spec.js",
+              "line": 87,
+              "column": 5
+            },
+            {
+              "title": "contact form is present",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 443,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:28.843Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-85d51c332a7349c4862c",
+              "file": "frontend.spec.js",
+              "line": 114,
+              "column": 5
+            },
+            {
+              "title": "projects section displays",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1461,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:29.291Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-bb2915a03a8318f86ba9",
+              "file": "frontend.spec.js",
+              "line": 124,
+              "column": 5
+            },
+            {
+              "title": "responsive design - mobile view",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2311,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:30.758Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-2b9c695682e22f135e56",
+              "file": "frontend.spec.js",
+              "line": 142,
+              "column": 5
+            },
+            {
+              "title": "responsive design - tablet view",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2185,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-30T21:28:33.074Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8927c7c7abd922a0b01-38a2423ebbb6e26d650b",
+              "file": "frontend.spec.js",
+              "line": 158,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-11-30T21:27:32.725Z",
+    "duration": 62634.061,
+    "expected": 25,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
