@@ -44,7 +44,11 @@ const HexagonSkill = ({ skill, index, isFlipped, onMouseEnter, onMouseLeave }) =
                 <img
                   src={skill.icon}
                   alt={skill.name}
+                  width="56"
+                  height="56"
+                  loading="lazy"
                   className="w-12 h-12 md:w-14 md:h-14 object-contain"
+                  style={{ aspectRatio: '1 / 1' }}
                 />
               ) : (
                 <span className="text-4xl md:text-5xl">💻</span>

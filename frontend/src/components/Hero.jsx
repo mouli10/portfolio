@@ -66,21 +66,27 @@ const Hero = () => {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
             className="mb-8 inline-block"
+            style={{ willChange: 'transform, opacity' }}
           >
             <div className="w-56 h-56 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-primary-500 to-purple-500 p-1 animate-float">
               <img
                 src={settings.profile_image_url || '/profile.jpeg'}
                 alt="Profile"
+                width="256"
+                height="256"
+                loading="eager"
                 className="w-full h-full rounded-full object-cover"
+                style={{ aspectRatio: '1 / 1' }}
               />
             </div>
           </motion.div>
 
           {/* Text Content */}
           <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            style={{ willChange: 'opacity' }}
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}

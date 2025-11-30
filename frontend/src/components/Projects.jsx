@@ -106,16 +106,18 @@ const Projects = () => {
                 className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-primary-500/20 transition-all group"
               >
                 {/* Project Image */}
-                <div className="relative overflow-hidden h-40 bg-gray-700">
+                <div className="relative overflow-hidden bg-gray-700" style={{ aspectRatio: '16 / 9', minHeight: '160px' }}>
                   {project.image_url ? (
                     <img
                       src={project.image_url}
                       alt={project.title}
+                      width="400"
+                      height="225"
                       loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl">
+                    <div className="absolute inset-0 w-full h-full flex items-center justify-center text-5xl">
                       💻
                     </div>
                   )}

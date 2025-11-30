@@ -92,7 +92,11 @@ const Experience = () => {
                                                 <img
                                                     src={exp.logo_url}
                                                     alt={`${exp.company} logo`}
+                                                    width="48"
+                                                    height="48"
+                                                    loading="lazy"
                                                     className="w-12 h-12 object-contain rounded-lg bg-white p-2 flex-shrink-0"
+                                                    style={{ aspectRatio: '1 / 1' }}
                                                 />
                                             ) : (
                                                 <div className="w-12 h-12 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
