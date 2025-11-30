@@ -8,12 +8,16 @@ export default defineConfig({
     workers: 1,
     reporter: [
         ['html', { outputFolder: 'playwright-report', open: 'never' }],
-        ['list']
+        ['list'],
+        ['json', { outputFile: 'test-results/results.json' }]
     ],
     use: {
         baseURL: 'http://localhost:5173',
-        trace: 'on-first-retry',
+        trace: 'retain-on-failure',
         screenshot: 'only-on-failure',
+        video: 'retain-on-failure',
+        actionTimeout: 10000,
+        navigationTimeout: 30000,
     },
     projects: [
         {
