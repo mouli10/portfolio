@@ -33,11 +33,12 @@ supabase: Client = create_client(
 )
 
 # Health check endpoint for uptime monitoring
-@app.get("/")
+# Health check endpoint for uptime monitoring
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return {"status": "ok", "message": "Portfolio API is running"}
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health_check():
     return {"status": "healthy", "service": "portfolio-api"}
 
