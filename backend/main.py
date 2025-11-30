@@ -32,6 +32,15 @@ supabase: Client = create_client(
     os.getenv("SUPABASE_KEY")
 )
 
+# Health check endpoint for uptime monitoring
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "Portfolio API is running"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "portfolio-api"}
+
 # Admin authentication
 def verify_admin_token(authorization: Optional[str] = Header(None)):
     """Verify admin authentication token using Supabase Auth"""
