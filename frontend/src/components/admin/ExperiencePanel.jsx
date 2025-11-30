@@ -40,11 +40,11 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
     const saveExperience = async () => {
         try {
             const token = localStorage.getItem('adminToken')
-            const config = { headers: { Authorization: `Bearer ${token} ` } }
+            const config = { headers: { Authorization: `Bearer ${token}` } }
 
             if (editingExperience.id) {
                 // Update existing
-                await axios.put(`/ api / admin / experience / ${editingExperience.id} `, editingExperience, config)
+                await axios.put(`/api/admin/experience/${editingExperience.id}`, editingExperience, config)
             } else {
                 // Create new
                 await axios.post('/api/admin/experience', editingExperience, config)
@@ -71,8 +71,8 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
     const handleDelete = async (experienceId) => {
         try {
             const token = localStorage.getItem('adminToken')
-            await axios.delete(`/ api / admin / experience / ${experienceId} `, {
-                headers: { Authorization: `Bearer ${token} ` }
+            await axios.delete(`/api/admin/experience/${experienceId}`, {
+                headers: { Authorization: `Bearer ${token}` }
             })
             fetchExperiences()
             toast.success('Experience deleted successfully!')
