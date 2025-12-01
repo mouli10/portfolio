@@ -69,6 +69,9 @@ class Project(BaseModel):
     live_url: Optional[str] = None
     image_url: Optional[str] = None
     featured: bool = False
+    in_progress: bool = False
+    future_idea: bool = False
+    is_hidden: bool = False
 
 class ProjectCreate(BaseModel):
     title: str
@@ -78,6 +81,9 @@ class ProjectCreate(BaseModel):
     live_url: Optional[str] = None
     image_url: Optional[str] = None
     featured: bool = False
+    in_progress: bool = False
+    future_idea: bool = False
+    is_hidden: bool = False
 
 class Skill(BaseModel):
     id: int
@@ -85,12 +91,14 @@ class Skill(BaseModel):
     category: str
     level: int
     icon: Optional[str] = None
+    is_hidden: bool = False
 
 class SkillCreate(BaseModel):
     name: str
     category: str
     level: int
     icon: Optional[str] = None
+    is_hidden: bool = False
 
 class ContactMessage(BaseModel):
     name: str
@@ -105,6 +113,7 @@ class Experience(BaseModel):
     date: str
     description: str
     logo_url: Optional[str] = None
+    is_hidden: bool = False
 
 class ExperienceCreate(BaseModel):
     title: str
@@ -112,6 +121,7 @@ class ExperienceCreate(BaseModel):
     date: str
     description: str
     logo_url: Optional[str] = None
+    is_hidden: bool = False
 
 class Education(BaseModel):
     id: int
@@ -121,6 +131,7 @@ class Education(BaseModel):
     description: str
     cgpa: Optional[str] = None
     logo_url: Optional[str] = None
+    is_hidden: bool = False
 
 class EducationCreate(BaseModel):
     institution: str
@@ -129,6 +140,7 @@ class EducationCreate(BaseModel):
     description: str
     cgpa: Optional[str] = None
     logo_url: Optional[str] = None
+    is_hidden: bool = False
 
 class Certificate(BaseModel):
     id: int
@@ -138,6 +150,7 @@ class Certificate(BaseModel):
     description: str
     credential_url: Optional[str] = None
     logo_url: Optional[str] = None
+    is_hidden: bool = False
 
 class CertificateCreate(BaseModel):
     title: str
@@ -146,6 +159,7 @@ class CertificateCreate(BaseModel):
     description: str
     credential_url: Optional[str] = None
     logo_url: Optional[str] = None
+    is_hidden: bool = False
 
 class SiteSettings(BaseModel):
     id: int
@@ -200,9 +214,11 @@ class AboutMeUpdate(BaseModel):
 class SkillCategory(BaseModel):
     id: int
     name: str
+    is_hidden: bool = False
 
 class SkillCategoryCreate(BaseModel):
     name: str
+    is_hidden: bool = False
 
 class AdminLogin(BaseModel):
     username: str
@@ -232,6 +248,10 @@ async def get_projects(featured: Optional[bool] = None):
         query = supabase.table("projects").select("*").order("id")
         if featured is not None:
             query = query.eq("featured", featured)
+        
+        # Filter out hidden projects for public API
+        query = query.eq("is_hidden", False)
+        
         response = query.execute()
         return response.data
     except Exception as e:
@@ -257,7 +277,8 @@ async def get_project(project_id: int):
 async def get_experience():
     """Get all experience items"""
     try:
-        response = supabase.table("experience").select("*").order("id", desc=True).execute()
+        # Filter out hidden experience for public API
+        response = supabase.table("experience").select("*").eq("is_hidden", False).order("id", desc=True).execute()
         return response.data
     except Exception as e:
         print(f"Error fetching experience: {e}")
@@ -271,8 +292,21 @@ async def get_skills(category: Optional[str] = None):
         query = supabase.table("skills").select("*").order("id")
         if category:
             query = query.eq("category", category)
+            
+        # Filter out hidden skills for public API
+        query = query.eq("is_hidden", False)
+        
         response = query.execute()
-        return response.data
+        
+        # Also filter out skills belonging to hidden categories
+        # Get hidden categories
+        hidden_categories_response = supabase.table("skill_categories").select("name").eq("is_hidden", True).execute()
+        hidden_category_names = [cat["name"] for cat in hidden_categories_response.data]
+        
+        # Filter skills
+        visible_skills = [skill for skill in response.data if skill["category"] not in hidden_category_names]
+        
+        return visible_skills
     except Exception as e:
         print(f"Error fetching skills: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -281,7 +315,8 @@ async def get_skills(category: Optional[str] = None):
 async def get_skill_categories():
     """Get all skill categories"""
     try:
-        response = supabase.table("skill_categories").select("*").order("name").execute()
+        # Filter out hidden categories for public API
+        response = supabase.table("skill_categories").select("*").eq("is_hidden", False).order("name").execute()
         return response.data
     except Exception as e:
         print(f"Error fetching skill categories: {e}")
@@ -291,8 +326,16 @@ async def get_skill_categories():
 async def get_skill_categories_legacy():
     """Get all unique skill categories"""
     try:
-        response = supabase.table("skills").select("category").execute()
-        categories = list(set(skill["category"] for skill in response.data))
+        # Only get categories from visible skills and visible categories
+        # First get visible categories
+        cat_response = supabase.table("skill_categories").select("name").eq("is_hidden", False).execute()
+        visible_categories = [c["name"] for c in cat_response.data]
+        
+        # Then get skills that are not hidden
+        response = supabase.table("skills").select("category").eq("is_hidden", False).execute()
+        
+        # Filter categories that are both in visible_categories AND have visible skills
+        categories = list(set(skill["category"] for skill in response.data if skill["category"] in visible_categories))
         return {"categories": categories}
     except Exception as e:
         print(f"Error fetching categories: {e}")
@@ -356,6 +399,68 @@ async def delete_message(message_id: int):
     except Exception as e:
         print(f"Error deleting message: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Admin GET endpoints - return ALL items including hidden ones
+@app.get("/api/admin/projects", dependencies=[Depends(verify_admin_token)])
+async def get_all_projects_admin():
+    """Get all projects including hidden ones (admin only)"""
+    try:
+        response = supabase.table("projects").select("*").order("id").execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching projects: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/skills", dependencies=[Depends(verify_admin_token)])
+async def get_all_skills_admin():
+    """Get all skills including hidden ones (admin only)"""
+    try:
+        response = supabase.table("skills").select("*").order("id").execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching skills: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/experience", dependencies=[Depends(verify_admin_token)])
+async def get_all_experience_admin():
+    """Get all experience including hidden ones (admin only)"""
+    try:
+        response = supabase.table("experience").select("*").order("id", desc=True).execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching experience: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/education", dependencies=[Depends(verify_admin_token)])
+async def get_all_education_admin():
+    """Get all education including hidden ones (admin only)"""
+    try:
+        response = supabase.table("education").select("*").order("id", desc=True).execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching education: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/certificates", dependencies=[Depends(verify_admin_token)])
+async def get_all_certificates_admin():
+    """Get all certificates including hidden ones (admin only)"""
+    try:
+        response = supabase.table("certificates").select("*").order("id", desc=True).execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching certificates: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/skill-categories", dependencies=[Depends(verify_admin_token)])
+async def get_all_skill_categories_admin():
+    """Get all skill categories including hidden ones (admin only)"""
+    try:
+        response = supabase.table("skill_categories").select("*").order("name").execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching skill categories: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/admin/projects", dependencies=[Depends(verify_admin_token)])
 async def create_project(project: ProjectCreate):
@@ -469,7 +574,8 @@ async def delete_experience(experience_id: int):
 @app.get("/api/education", response_model=List[Education])
 async def get_education():
     try:
-        response = supabase.table("education").select("*").order("id", desc=True).execute()
+        # Filter out hidden education for public API
+        response = supabase.table("education").select("*").eq("is_hidden", False).order("id", desc=True).execute()
         return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -502,6 +608,17 @@ async def delete_education(education_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/skill-categories", response_model=List[SkillCategory])
+async def get_skill_categories():
+    """Get all skill categories (public)"""
+    try:
+        # Filter out hidden categories for public API
+        response = supabase.table("skill_categories").select("*").eq("is_hidden", False).order("name").execute()
+        return response.data
+    except Exception as e:
+        print(f"Error fetching skill categories: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/admin/skill-categories", dependencies=[Depends(verify_admin_token)])
 async def create_skill_category(category: SkillCategoryCreate):
     """Create a new skill category"""
@@ -525,10 +642,11 @@ async def update_skill_category(category_id: int, category: SkillCategoryCreate)
         old_name = old_category.data[0]["name"]
         new_name = category.name
         
-        # Update category
-        response = supabase.table("skill_categories").update({"name": new_name}).eq("id", category_id).execute()
+        # Update category with all fields from the request
+        update_data = category.dict()
+        response = supabase.table("skill_categories").update(update_data).eq("id", category_id).execute()
         
-        # Update all skills associated with this category
+        # Update all skills associated with this category if name changed
         if old_name != new_name:
             supabase.table("skills").update({"category": new_name}).eq("category", old_name).execute()
             
@@ -581,7 +699,8 @@ async def delete_skill_category(category_id: int, migrate_to: Optional[int] = No
 @app.get("/api/certificates", response_model=List[Certificate])
 async def get_certificates():
     try:
-        response = supabase.table("certificates").select("*").order("id", desc=True).execute()
+        # Filter out hidden certificates for public API
+        response = supabase.table("certificates").select("*").eq("is_hidden", False).order("id", desc=True).execute()
         return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
