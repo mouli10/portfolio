@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { FaGithub, FaExternalLinkAlt, FaStar } from 'react-icons/fa'
+import { FaStar, FaGithub, FaExternalLinkAlt, FaClock, FaLightbulb } from 'react-icons/fa'
 import axios from 'axios'
 import { useData } from '../context/DataContext'
 
@@ -68,30 +68,11 @@ const Projects = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               My <span className="text-gradient">Projects</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-primary-500 to-purple-500 mx-auto mb-8"></div>
+            <div className="w-20 h-1 bg-gradient-to-r from-primary-500 to-purple-500 mx-auto"></div>
           </motion.div>
 
           {/* Filter Buttons */}
-          <motion.div variants={itemVariants} className="flex justify-start gap-3 mb-12">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filter === 'all'
-                ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-            >
-              All Projects
-            </button>
-            <button
-              onClick={() => setFilter('featured')}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${filter === 'featured'
-                ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-            >
-              <FaStar /> Featured
-            </button>
-          </motion.div>
+          {/* Removed filter buttons div */}
 
           {/* Projects Grid */}
           <motion.div
@@ -106,15 +87,12 @@ const Projects = () => {
                 className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-primary-500/20 transition-all group"
               >
                 {/* Project Image */}
-                <div className="relative overflow-hidden bg-gray-700" style={{ aspectRatio: '16 / 9', minHeight: '160px' }}>
+                <div className="relative h-48 bg-gradient-to-br from-primary-500/10 to-purple-500/10 overflow-hidden">
                   {project.image_url ? (
                     <img
                       src={project.image_url}
                       alt={project.title}
-                      width="400"
-                      height="225"
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
                     <div className="absolute inset-0 w-full h-full flex items-center justify-center text-5xl">
@@ -126,11 +104,21 @@ const Projects = () => {
                       <FaStar size={12} /> Featured
                     </div>
                   )}
+                  {project.in_progress && (
+                    <div className="absolute top-3 left-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1">
+                      <FaClock size={12} /> In Progress
+                    </div>
+                  )}
+                  {project.future_idea && (
+                    <div className="absolute bottom-3 right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1">
+                      <FaLightbulb size={12} /> Future Idea
+                    </div>
+                  )}
                 </div>
 
                 {/* Project Content */}
                 <div className="p-4">
-                  <h3 className="text-lg font-bold mb-2 text-gradient">
+                  <h3 className="text-lg font-bold text-gradient mb-3">
                     {project.title}
                   </h3>
                   <p className="text-gray-400 text-sm mb-3 line-clamp-4">
