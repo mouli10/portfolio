@@ -71,6 +71,26 @@ const Skills = () => {
     triggerOnce: true,
     threshold: 0.1,
   })
+  const [pattern, setPattern] = useState([9, 8]) // Default desktop
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      if (width < 640) {
+        setPattern([4, 3]) // Mobile
+      } else if (width < 1024) {
+        setPattern([7, 6]) // Tablet
+      } else {
+        setPattern([9, 8]) // Desktop
+      }
+    }
+
+    // Initial check
+    handleResize()
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     if (isPaused) return
@@ -196,11 +216,14 @@ const Skills = () => {
         }
 
         .honeycomb-row.offset {
-          margin-left: 40px;
+          /* No margin needed as justify-content: center handles the offset naturally */
         }
 
+        /* Mobile (Default) */
+        /* Pattern: 4-3-4-3 handled by JS */
+        
         /* Tablet */
-        @media (min-width: 640px) {
+        @media (min-width: 640px) and (max-width: 1023px) {
           .hexagon-container {
             width: 95px;
             height: 109px;
@@ -220,12 +243,12 @@ const Skills = () => {
           }
 
           .honeycomb-row.offset {
-            margin-left: 48px;
+            /* No margin needed */
           }
         }
 
         /* Desktop */
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .hexagon-container {
             width: 110px;
             height: 127px;
@@ -241,12 +264,12 @@ const Skills = () => {
           }
 
           .honeycomb-row.offset {
-            margin-left: 57px;
+            /* No margin needed */
           }
         }
 
         /* Large Desktop */
-        @media (min-width: 1024px) {
+        @media (min-width: 1280px) {
           .hexagon-container {
             width: 120px;
             height: 138px;
@@ -262,11 +285,11 @@ const Skills = () => {
 
           .honeycomb-row {
             gap: 10px;
-            margin-bottom: -28px;
+            margin-bottom: -30px;
           }
 
           .honeycomb-row.offset {
-            margin-left: 62px;
+            /* No margin needed */
           }
         }
       `}</style>
@@ -312,18 +335,55 @@ const Skills = () => {
             ))}
           </motion.div>
 
-          {/* Skills Hexagon Grid - Responsive Grid */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 max-w-5xl mx-auto">
-            {filteredSkills.map((skill, index) => (
-              <HexagonSkill
-                key={skill.id}
-                skill={skill}
-                index={index}
-                isFlipped={isFlipped}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-              />
-            ))}
+          {/* Skills Hexagon Grid - Honeycomb Pattern */}
+          <div className="honeycomb-grid max-w-6xl mx-auto">
+            {(() => {
+              // Determine pattern based on window width
+              // We use a simplified check here, but for true responsiveness we need state
+              // Since we can't easily add state inside this return, we'll assume desktop default
+              // and let the useEffect below handle the re-render with correct pattern
+
+              const rows = []
+              let skillIndex = 0
+              let rowIndex = 0
+
+              while (skillIndex < filteredSkills.length) {
+                const isOffsetRow = rowIndex % 2 === 1
+                const itemsInRow = isOffsetRow ? pattern[1] : pattern[0]
+                const rowSkills = filteredSkills.slice(skillIndex, skillIndex + itemsInRow)
+
+                // Check if we need a placeholder to maintain alignment
+                // If row capacity is even, we need even number of items
+                // If row capacity is odd, we need odd number of items
+                const needsPlaceholder = rowSkills.length % 2 !== itemsInRow % 2
+
+                rows.push(
+                  <div
+                    key={rowIndex}
+                    className={`honeycomb-row ${isOffsetRow ? 'offset' : ''}`}
+                  >
+                    {rowSkills.map((skill, idx) => (
+                      <HexagonSkill
+                        key={skill.id}
+                        skill={skill}
+                        index={skillIndex + idx}
+                        isFlipped={isFlipped}
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                      />
+                    ))}
+                    {needsPlaceholder && (
+                      <div className="hexagon-container invisible" aria-hidden="true" />
+                    )}
+                  </div>
+                )
+
+                skillIndex += rowSkills.length
+                rowIndex++
+              }
+
+              return rows
+            })()}
           </div>
         </motion.div>
       </div>
