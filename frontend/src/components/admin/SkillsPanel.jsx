@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaEye, FaEyeSlash } from 'react-icons/fa'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import ConfirmationModal from './ConfirmationModal'
@@ -31,7 +31,10 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
 
   const fetchSkills = async () => {
     try {
-      const response = await axios.get('/api/skills')
+      const token = localStorage.getItem('adminToken')
+      const response = await axios.get('/api/admin/skills', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       setSkills(Array.isArray(response.data) ? response.data : [])
       setLoading(false)
       if (onStatsUpdate) onStatsUpdate()
@@ -94,6 +97,22 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
     } catch (error) {
       console.error('Error deleting skill:', error)
       toast.error('Failed to delete skill')
+    }
+  }
+
+
+  const handleToggleVisibility = async (skill) => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      await axios.put(`/api/admin/skills/${skill.id}`,
+        { ...skill, is_hidden: !skill.is_hidden },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      fetchSkills()
+      toast.success(`Skill ${!skill.is_hidden ? 'hidden' : 'visible'}`)
+    } catch (error) {
+      console.error('Error toggling visibility:', error)
+      toast.error('Failed to update visibility')
     }
   }
 
@@ -265,10 +284,10 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
             <motion.div
               key={skill.id}
               initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: skill.is_hidden ? 0.5 : 1, scale: 1 }}
               whileHover={{ scale: 1.02 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gray-800 rounded-lg p-4 text-center"
+              className={`bg-gray-800 rounded-lg p-4 text-center ${skill.is_hidden ? 'border border-gray-600 border-dashed' : ''}`}
             >
               <div className="text-4xl mb-3">
                 {skill.icon ? (
@@ -281,7 +300,12 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
                   <span>💻</span>
                 )}
               </div>
-              <h3 className="text-lg font-semibold text-white mb-1">{skill.name}</h3>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <h3 className="text-lg font-semibold text-white">{skill.name}</h3>
+                {skill.is_hidden && (
+                  <span className="px-1.5 py-0.5 bg-gray-700 text-gray-400 text-[10px] rounded-full">Hidden</span>
+                )}
+              </div>
               <span className="inline-block px-3 py-1 bg-gray-700 text-primary-400 rounded-full text-xs mb-3">
                 {skill.category}
               </span>
@@ -301,6 +325,13 @@ const SkillsPanel = ({ onStatsUpdate, onTabChange }) => {
                   className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all text-sm"
                 >
                   <FaEdit /> Edit
+                </button>
+                <button
+                  onClick={() => handleToggleVisibility(skill)}
+                  className={`p-2 rounded-lg transition-all ${skill.is_hidden ? 'text-gray-400 hover:bg-gray-500/20' : 'text-blue-400 hover:bg-blue-500/20'}`}
+                  title={skill.is_hidden ? "Show" : "Hide"}
+                >
+                  {skill.is_hidden ? <FaEyeSlash /> : <FaEye />}
                 </button>
                 <button
                   onClick={() => handleDeleteClick(skill)}

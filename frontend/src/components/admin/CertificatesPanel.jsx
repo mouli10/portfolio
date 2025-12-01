@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaAward, FaCertificate } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaAward, FaCertificate, FaEye, FaEyeSlash } from 'react-icons/fa'
 import axios from 'axios'
 
 import { toast } from 'react-hot-toast'
@@ -28,7 +28,10 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
 
     const fetchCertificates = async () => {
         try {
-            const response = await axios.get('/api/certificates')
+            const token = localStorage.getItem('adminToken')
+            const response = await axios.get('/api/admin/certificates', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
             setCertificates(Array.isArray(response.data) ? response.data : [])
             setLoading(false)
             if (onStatsUpdate) onStatsUpdate()
@@ -82,6 +85,21 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
         } catch (error) {
             console.error('Error deleting certificate:', error)
             toast.error('Failed to delete certificate')
+        }
+    }
+
+    const handleToggleVisibility = async (cert) => {
+        try {
+            const token = localStorage.getItem('adminToken')
+            await axios.put(`/api/admin/certificates/${cert.id}`,
+                { ...cert, is_hidden: !cert.is_hidden },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            fetchCertificates()
+            toast.success(`Certificate ${!cert.is_hidden ? 'hidden' : 'visible'}`)
+        } catch (error) {
+            console.error('Error toggling visibility:', error)
+            toast.error('Failed to update visibility')
         }
     }
 
@@ -232,9 +250,9 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
                         <motion.div
                             key={cert.id}
                             initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            animate={{ opacity: cert.is_hidden ? 0.5 : 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
-                            className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                            className={`bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${cert.is_hidden ? 'border border-gray-600 border-dashed' : ''}`}
                         >
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
@@ -242,7 +260,12 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
                                         <FaCertificate />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-white">{cert.title}</h3>
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="text-xl font-bold text-white">{cert.title}</h3>
+                                            {cert.is_hidden && (
+                                                <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded-full">Hidden</span>
+                                            )}
+                                        </div>
                                         <p className="text-primary-400">{cert.issuer}</p>
                                     </div>
                                 </div>
@@ -256,6 +279,13 @@ const CertificatesPanel = ({ onStatsUpdate }) => {
                                     className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
                                 >
                                     <FaEdit /> Edit
+                                </button>
+                                <button
+                                    onClick={() => handleToggleVisibility(cert)}
+                                    className={`p-2 rounded-lg transition-all ${cert.is_hidden ? 'text-gray-400 hover:bg-gray-500/20' : 'text-blue-400 hover:bg-blue-500/20'}`}
+                                    title={cert.is_hidden ? "Show" : "Hide"}
+                                >
+                                    {cert.is_hidden ? <FaEyeSlash /> : <FaEye />}
                                 </button>
                                 <button
                                     onClick={() => handleDeleteClick(cert)}

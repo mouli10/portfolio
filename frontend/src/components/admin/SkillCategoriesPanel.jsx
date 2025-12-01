@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaExclamationTriangle } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaExclamationTriangle, FaEye, FaEyeSlash } from 'react-icons/fa'
 import axios from 'axios'
 
 import { toast } from 'react-hot-toast'
@@ -25,9 +25,12 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
 
     const fetchData = async () => {
         try {
+            const token = localStorage.getItem('adminToken')
             const [categoriesRes, skillsRes] = await Promise.all([
-                axios.get('/api/skill-categories'),
-                axios.get('/api/skills')
+                axios.get('/api/admin/skill-categories', {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                axios.get('/api/skills') // Assuming skills still fetched from public endpoint
             ])
             setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : [])
             setSkills(skillsRes.data)
@@ -89,6 +92,21 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
         } catch (error) {
             console.error('Error updating category:', error)
             toast.error(error.response?.data?.detail || 'Failed to update category')
+        }
+    }
+
+    const handleToggleVisibility = async (category) => {
+        try {
+            const token = localStorage.getItem('adminToken')
+            await axios.put(`/api/admin/skill-categories/${category.id}`,
+                { name: category.name, is_hidden: !category.is_hidden },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            fetchData()
+            toast.success(`Category ${!category.is_hidden ? 'hidden' : 'visible'}`)
+        } catch (error) {
+            console.error('Error toggling visibility:', error)
+            toast.error('Failed to update visibility')
         }
     }
 
@@ -197,8 +215,8 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
                         <motion.div
                             key={category.id}
                             initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="bg-gray-800 rounded-lg p-4 flex items-center justify-between"
+                            animate={{ opacity: category.is_hidden ? 0.5 : 1, scale: 1 }}
+                            className={`bg-gray-800 rounded-lg p-4 flex items-center justify-between ${category.is_hidden ? 'border border-gray-600 border-dashed' : ''}`}
                         >
                             <div className="flex-1">
                                 {editingCategory?.id === category.id ? (
@@ -227,20 +245,35 @@ const SkillCategoriesPanel = ({ onStatsUpdate }) => {
                                     </div>
                                 ) : (
                                     <>
-                                        <h3 className="text-lg font-semibold text-white">{category.name}</h3>
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="text-lg font-semibold text-white">{category.name}</h3>
+                                            {category.is_hidden && (
+                                                <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded-full">Hidden</span>
+                                            )}
+                                        </div>
                                         <p className="text-sm text-gray-400">{skillCount} skill{skillCount !== 1 ? 's' : ''}</p>
                                     </>
                                 )}
                             </div>
                             <div className="flex gap-1">
+
                                 {!editingCategory && (
-                                    <button
-                                        onClick={() => startEditing(category)}
-                                        className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all"
-                                        title="Edit"
-                                    >
-                                        <FaEdit />
-                                    </button>
+                                    <>
+                                        <button
+                                            onClick={() => handleToggleVisibility(category)}
+                                            className={`p-2 rounded-lg transition-all ${category.is_hidden ? 'text-gray-400 hover:bg-gray-500/20' : 'text-blue-400 hover:bg-blue-500/20'}`}
+                                            title={category.is_hidden ? "Show" : "Hide"}
+                                        >
+                                            {category.is_hidden ? <FaEyeSlash /> : <FaEye />}
+                                        </button>
+                                        <button
+                                            onClick={() => startEditing(category)}
+                                            className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all"
+                                            title="Edit"
+                                        >
+                                            <FaEdit />
+                                        </button>
+                                    </>
                                 )}
                                 <button
                                     onClick={() => handleDeleteClick(category)}

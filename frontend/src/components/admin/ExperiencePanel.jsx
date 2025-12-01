@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaBriefcase } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaBriefcase, FaEye, FaEyeSlash } from 'react-icons/fa'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import ConfirmationModal from './ConfirmationModal'
@@ -27,7 +27,10 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
 
     const fetchExperiences = async () => {
         try {
-            const response = await axios.get('/api/experience')
+            const token = localStorage.getItem('adminToken')
+            const response = await axios.get('/api/admin/experience', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
             setExperiences(response.data)
             setLoading(false)
             if (onStatsUpdate) onStatsUpdate()
@@ -80,6 +83,21 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
         } catch (error) {
             console.error('Error deleting experience:', error)
             toast.error('Failed to delete experience')
+        }
+    }
+
+    const handleToggleVisibility = async (experience) => {
+        try {
+            const token = localStorage.getItem('adminToken')
+            await axios.put(`/api/admin/experience/${experience.id}`,
+                { ...experience, is_hidden: !experience.is_hidden },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            fetchExperiences()
+            toast.success(`Experience ${!experience.is_hidden ? 'hidden' : 'visible'}`)
+        } catch (error) {
+            console.error('Error toggling visibility:', error)
+            toast.error('Failed to update visibility')
         }
     }
 
@@ -214,9 +232,9 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
                     <motion.div
                         key={exp.id}
                         initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        animate={{ opacity: exp.is_hidden ? 0.5 : 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4"
+                        className={`bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 ${exp.is_hidden ? 'border border-gray-600 border-dashed' : ''}`}
                     >
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -224,7 +242,12 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
                                     <FaBriefcase />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-white">{exp.title}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-xl font-bold text-white">{exp.title}</h3>
+                                        {exp.is_hidden && (
+                                            <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded-full">Hidden</span>
+                                        )}
+                                    </div>
                                     <p className="text-primary-400">{exp.company}</p>
                                 </div>
                             </div>
@@ -238,6 +261,13 @@ const ExperiencePanel = ({ onStatsUpdate }) => {
                                 className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
                             >
                                 <FaEdit /> Edit
+                            </button>
+                            <button
+                                onClick={() => handleToggleVisibility(exp)}
+                                className={`p-2 rounded-lg transition-all ${exp.is_hidden ? 'text-gray-400 hover:bg-gray-500/20' : 'text-blue-400 hover:bg-blue-500/20'}`}
+                                title={exp.is_hidden ? "Show" : "Hide"}
+                            >
+                                {exp.is_hidden ? <FaEyeSlash /> : <FaEye />}
                             </button>
                             <button
                                 onClick={() => handleDeleteClick(exp)}

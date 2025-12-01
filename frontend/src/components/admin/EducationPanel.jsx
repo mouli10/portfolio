@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaUniversity, FaGraduationCap } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaUniversity, FaGraduationCap, FaEye, FaEyeSlash } from 'react-icons/fa'
 import axios from 'axios'
 
 import { toast } from 'react-hot-toast'
@@ -19,7 +19,8 @@ const EducationPanel = ({ onStatsUpdate }) => {
         date: '',
         description: '',
         cgpa: '',
-        logo_url: ''
+        logo_url: '',
+        is_hidden: false // Default to not hidden
     }
 
     useEffect(() => {
@@ -28,7 +29,10 @@ const EducationPanel = ({ onStatsUpdate }) => {
 
     const fetchEducation = async () => {
         try {
-            const response = await axios.get('/api/education')
+            const token = localStorage.getItem('adminToken')
+            const response = await axios.get('/api/admin/education', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
             setEducationList(Array.isArray(response.data) ? response.data : [])
             setLoading(false)
             if (onStatsUpdate) onStatsUpdate()
@@ -83,6 +87,22 @@ const EducationPanel = ({ onStatsUpdate }) => {
         } catch (error) {
             console.error('Error deleting education:', error)
             toast.error('Failed to delete education')
+        }
+    }
+
+    const handleToggleVisibility = async (education) => {
+        try {
+            const token = localStorage.getItem('adminToken')
+            const config = { headers: { Authorization: `Bearer ${token}` } }
+            const updatedEducation = { ...education, is_hidden: !education.is_hidden }
+            await axios.put(`/api/admin/education/${education.id}`, updatedEducation, config)
+            setEducationList(prevList =>
+                prevList.map(edu => (edu.id === education.id ? updatedEducation : edu))
+            )
+            toast.success(`Education ${updatedEducation.is_hidden ? 'hidden' : 'shown'} successfully`)
+        } catch (error) {
+            console.error('Error toggling education visibility:', error)
+            toast.error('Failed to toggle visibility')
         }
     }
 
@@ -229,9 +249,9 @@ const EducationPanel = ({ onStatsUpdate }) => {
                         <motion.div
                             key={edu.id}
                             initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            animate={{ opacity: edu.is_hidden ? 0.5 : 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
-                            className="bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                            className={`bg-gray-800 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 ${edu.is_hidden ? 'border border-gray-600 border-dashed' : ''}`}
                         >
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
@@ -239,8 +259,13 @@ const EducationPanel = ({ onStatsUpdate }) => {
                                         <FaUniversity />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-white">{edu.degree}</h3>
-                                        <p className="text-primary-400">{edu.institution}</p>
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="text-xl font-bold text-white">{edu.institution}</h3>
+                                            {edu.is_hidden && (
+                                                <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded-full">Hidden</span>
+                                            )}
+                                        </div>
+                                        <p className="text-primary-400">{edu.degree}</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4 text-sm text-gray-500 mb-2">
@@ -260,6 +285,13 @@ const EducationPanel = ({ onStatsUpdate }) => {
                                     className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-all"
                                 >
                                     <FaEdit /> Edit
+                                </button>
+                                <button
+                                    onClick={() => handleToggleVisibility(edu)}
+                                    className={`p-2 rounded-lg transition-all ${edu.is_hidden ? 'text-gray-400 hover:bg-gray-500/20' : 'text-blue-400 hover:bg-blue-500/20'}`}
+                                    title={edu.is_hidden ? "Show" : "Hide"}
+                                >
+                                    {edu.is_hidden ? <FaEyeSlash /> : <FaEye />}
                                 </button>
                                 <button
                                     onClick={() => handleDeleteClick(edu)}
